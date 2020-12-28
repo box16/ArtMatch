@@ -7,3 +7,4 @@ artmatch/artmatch/__pycache__
 artmatch/articles/__pycache__
 artmatch/db.sqlite3
 artmatch/manage.py
+ArtMatchDB
