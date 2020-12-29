@@ -1,5 +1,9 @@
-{% if main_message %}
-    <p>{{main_message}}</p>
+{% if pick_up_articles %}
+    <ul>
+    {% for article in pick_up_articles %}
+        <li>{{ article.title }}</li>
+    {% endfor %}
+    </ul>
 {% else %}
-    <p>Error!</p>
+    <p>No articles are available.</p>
 {% endif %}
