@@ -1,0 +1,15 @@
+{% load static %}
+
+<link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
+
+<h1>{{ articles.title }}</h1>
+
+{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+
+<p><a href={{articles.url}}>元記事</a></p>
+
+<p id="main_text">
+    {{articles.body}}
+</p>
+
+<p><a href="{% url 'articles:index' %}">記事一覧に戻る</a></p>

@@ -33,6 +33,7 @@ class DetailViewTests(TestCase):
         self.assertContains(response, a.title)
         self.assertContains(response, a.url)
         self.assertContains(response, a.body)
+        self.assertContains(response, "記事一覧に戻る")
     
     def test_abnormal_access(self):
         a = create_article()
