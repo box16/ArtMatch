@@ -22,3 +22,22 @@ class IndexViewTests(TestCase):
             response.context['pick_up_articles'],
             ['<Articles: title>']
         )
+
+class DetailViewTests(TestCase):
+    def test_normal_access(self):
+        a = create_article()
+        url = reverse('articles:detail',args=(a.id,))
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, a.title)
+        self.assertContains(response, a.url)
+        self.assertContains(response, a.body)
+        self.assertContains(response, "記事一覧に戻る")
+    
+    def test_abnormal_access(self):
+        a = create_article()
+        url = reverse('articles:detail',args=(a.id+99,))
+        response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)

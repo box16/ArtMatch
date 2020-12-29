@@ -1,7 +1,7 @@
 {% if pick_up_articles %}
     <ul>
     {% for article in pick_up_articles %}
-        <li>{{ article.title }}</li>
+        <li><a href="{% url 'articles:detail' article.id %}">{{ article.title }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
