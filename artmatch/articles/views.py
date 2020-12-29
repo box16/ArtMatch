@@ -9,3 +9,11 @@ class IndexView(generic.ListView):
     def get_queryset(self):
         """とりあえず、頭5個をピックアップとしている"""
         return Articles.objects.all()[:5]
+
+
+class DetailView(generic.DetailView):
+    model = Articles
+    template_name = 'articles/detail.html'
+
+    def get_queryset(self):
+         return Articles.objects.all()
