@@ -23,13 +23,13 @@ class TestWebcraw(unittest.TestCase):
 
     def test_collect_urls_normal_url(self):
         bs_object = self.crawler.get_bs_object(self.website["domain"])
-        urls = self.crawler.collect_urls(bs_object,
+        urls = self.crawler._collect_urls(bs_object,
                                          self.website["link_collector"])
         self.assertGreater(len(urls), 0)
 
     def test_collect_urls_abnormal_url(self):
         bs_object = self.crawler.get_bs_object("")
-        urls = self.crawler.collect_urls(bs_object,
+        urls = self.crawler._collect_urls(bs_object,
                                          self.website["link_collector"])
         self.assertEqual(len(urls), 0)
 
@@ -61,21 +61,21 @@ class TestWebcraw(unittest.TestCase):
         urls = ["https://example/"]
         answer_urls = ["https://example"]
         
-        result_urls = self.crawler.format_urls(urls)
+        result_urls = self.crawler._format_urls(urls)
         self.assertEqual(result_urls, answer_urls)
 
     def test_format_urls_duplicate(self):
         urls = ["https://example","https://example"]
         answer_urls = ["https://example"]
         
-        result_urls = self.crawler.format_urls(urls)
+        result_urls = self.crawler._format_urls(urls)
         self.assertEqual(result_urls, answer_urls)
 
     def test_format_urls_slash_duplicate(self):
         urls = ["https://example/","https://example/"]
         answer_urls = ["https://example"]
         
-        result_urls = self.crawler.format_urls(urls)
+        result_urls = self.crawler._format_urls(urls)
         self.assertEqual(result_urls, answer_urls)
     
     def test_crawl_normal_url(self):

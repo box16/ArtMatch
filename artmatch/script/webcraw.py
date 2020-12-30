@@ -14,7 +14,7 @@ class Crawler:
             return None
         return BeautifulSoup(req.text, "html.parser")
     
-    def collect_urls(self,bs_object,link_collector):
+    def _collect_urls(self,bs_object,link_collector):
         if not bs_object:
             return []
         result_urls = []
@@ -33,7 +33,7 @@ class Crawler:
         else:
             return ""
     
-    def format_urls(self,urls):
+    def _format_urls(self,urls):
         for index,url in enumerate(urls):
             urls[index] = re.sub(r"/$", "", url)
         return list(set(urls))
@@ -48,8 +48,8 @@ class Crawler:
             bs_object = self.get_bs_object(base_url)
             if not bs_object:
                 break
-            urls = urls + self.collect_urls(bs_object,link_collector)
-            urls = self.format_urls(urls)
+            urls = urls + self._collect_urls(bs_object,link_collector)
+            urls = self._format_urls(urls)
             base_url = random.choice(urls)
             progress += 1
         return urls
