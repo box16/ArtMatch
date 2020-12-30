@@ -79,24 +79,24 @@ class TestWebcraw(unittest.TestCase):
         self.assertEqual(result_urls, answer_urls)
     
     def test_crawl_normal_url(self):
-        urls = self.crawler.crawl(self.website["domain"],
+        urls = self.crawler.crawl_urls(self.website["domain"],
                                   self.website["link_collector"],
                                   times=2)
         self.assertGreater(len(urls), 0)
     
     def test_crawl_abnormal_url(self):
-        urls = self.crawler.crawl("",
+        urls = self.crawler.crawl_urls("",
                                   self.website["link_collector"],
                                   times=2)
         self.assertEqual(len(urls), 0)
     
     def test_crawl_abnormal_times(self):
-        urls = self.crawler.crawl(self.website["domain"],
+        urls = self.crawler.crawl_urls(self.website["domain"],
                                   self.website["link_collector"],
                                   times=-2)
         self.assertGreater(len(urls), 0)
         
-        urls = self.crawler.crawl(self.website["domain"],
+        urls = self.crawler.crawl_urls(self.website["domain"],
                                   self.website["link_collector"],
                                   times=10000000)
         self.assertGreater(len(urls), 0)

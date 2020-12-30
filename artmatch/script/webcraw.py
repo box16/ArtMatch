@@ -38,7 +38,7 @@ class Crawler:
             urls[index] = re.sub(r"/$", "", url)
         return list(set(urls))
     
-    def crawl(self,domein,link_collector,times=20):
+    def crawl_urls(self,domein,link_collector,times=20):
         base_url = domein
         progress = 0
         urls = []
@@ -52,5 +52,4 @@ class Crawler:
             urls = self.format_urls(urls)
             base_url = random.choice(urls)
             progress += 1
-        
         return urls
