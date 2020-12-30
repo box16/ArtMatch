@@ -56,6 +56,27 @@ class TestWebcraw(unittest.TestCase):
         elems = self.crawler.safe_get(bs_object,
                                      self.website["body_tag"])
         self.assertEqual(len(elems), 0)
+    
+    def test_format_urls_slash(self):
+        urls = ["https://example/"]
+        answer_urls = ["https://example"]
+        
+        result_urls = self.crawler.format_urls(urls)
+        self.assertEqual(result_urls, answer_urls)
+
+    def test_format_urls_duplicate(self):
+        urls = ["https://example","https://example"]
+        answer_urls = ["https://example"]
+        
+        result_urls = self.crawler.format_urls(urls)
+        self.assertEqual(result_urls, answer_urls)
+
+    def test_format_urls_slash_duplicate(self):
+        urls = ["https://example/","https://example/"]
+        answer_urls = ["https://example"]
+        
+        result_urls = self.crawler.format_urls(urls)
+        self.assertEqual(result_urls, answer_urls)
 
 if __name__ == "__main__":
     unittest.main()

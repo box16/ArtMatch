@@ -1,5 +1,6 @@
 import requests
 from bs4 import BeautifulSoup
+import re
 
 class Crawler:
     def __init__(self):
@@ -30,3 +31,8 @@ class Crawler:
             return '\n'.join([elem.get_text() for elem in selected_elems])
         else:
             return []
+    
+    def format_urls(self,urls):
+        for index,url in enumerate(urls):
+            urls[index] = re.sub(r"/$", "", url)
+        return list(set(urls))
