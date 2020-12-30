@@ -19,3 +19,18 @@ class TestDBAccess(unittest.TestCase):
             cursor.execute(
                 f"INSERT INTO articles_articles (id,title,url,body) VALUES (99999,'title','{dummy_url1}','body');")
             self.assertFalse(self.db_access.check_dueto_insert(dummy_url1))
+    
+    def test_escape_single_quote_normal(self):
+        text = "ab'cd"
+        answer = "ab''cd"
+        self.assertEqual(self.db_access.escape_single_quote(text),answer)
+    
+    def test_escape_single_quote_normal2(self):
+        text = "ab''cd"
+        answer = "ab''''cd"
+        self.assertEqual(self.db_access.escape_single_quote(text),answer)
+    
+    def test_escape_single_quote_normal3(self):
+        text = "abcd"
+        answer = "abcd"
+        self.assertEqual(self.db_access.escape_single_quote(text),answer)

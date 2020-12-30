@@ -1,5 +1,6 @@
 import psycopg2
 import os
+import re
 
 class DBAccess:
     def __init__(self):
@@ -15,12 +16,17 @@ class DBAccess:
             else:
                 return True
     
+    def escape_single_quote(self,text):
+        return re.sub(r"\'", "\'\'", text)
+    
     def insert_article(self,title="",url="",body=""):
         """commit 入ってくるとテストが難しいため、テスト未作成"""
         if not self.check_dueto_insert(url):
             return
         if (not title) or (not url) or (not body):
             return
+        title = self.escape_single_quote(title)
+        body = self.escape_single_quote(body)
         with self._connection.cursor() as cursor:
             cursor.execute(f"INSERT INTO articles_articles (id,title,url,body) VALUES (nextval('articles_articles_id_seq'),'{title}','{url}','{body}');")
             self._connection.commit()
