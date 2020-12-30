@@ -7,8 +7,7 @@ class IndexView(generic.ListView):
     context_object_name = "pick_up_articles"
 
     def get_queryset(self):
-        """とりあえず、頭5個をピックアップとしている"""
-        return Articles.objects.all()[:5]
+        return Articles.objects.all()
 
 
 class DetailView(generic.DetailView):
