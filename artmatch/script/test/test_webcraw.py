@@ -14,48 +14,48 @@ class TestWebcraw(unittest.TestCase):
                         }
 
     def test_get_page_normal_url(self):
-        bs_object = self.crawler.get_page(self.website["domain"])
+        bs_object = self.crawler.get_bs_object(self.website["domain"])
         self.assertIsNotNone(bs_object)
 
     def test_get_page_abnormal_url(self):
-        bs_object = self.crawler.get_page("")
+        bs_object = self.crawler.get_bs_object("")
         self.assertIsNone(bs_object)
 
     def test_collect_urls_normal_url(self):
-        bs_object = self.crawler.get_page(self.website["domain"])
+        bs_object = self.crawler.get_bs_object(self.website["domain"])
         urls = self.crawler.collect_urls(bs_object,
                                          self.website["link_collector"])
         self.assertGreater(len(urls), 0)
 
     def test_collect_urls_abnormal_url(self):
-        bs_object = self.crawler.get_page("")
+        bs_object = self.crawler.get_bs_object("")
         urls = self.crawler.collect_urls(bs_object,
                                          self.website["link_collector"])
         self.assertEqual(len(urls), 0)
 
     def test_safe_get_normal_url_title(self):
-        bs_object = self.crawler.get_page("https://yuchrszk.blogspot.com/2020/12/20208.html")
-        elems = self.crawler.safe_get(bs_object,
+        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        element = self.crawler.extract_element(bs_object,
                                      self.website["title_tag"])
-        self.assertGreater(len(elems), 0)
+        self.assertIsNotNone(element)
 
     def test_safe_get_abnormal_url_title(self):
-        bs_object = self.crawler.get_page("")
-        elems = self.crawler.safe_get(bs_object,
+        bs_object = self.crawler.get_bs_object("")
+        element = self.crawler.extract_element(bs_object,
                                      self.website["title_tag"])
-        self.assertEqual(len(elems), 0)
+        self.assertEqual(element, "")
     
     def test_safe_get_normal_url_body(self):
-        bs_object = self.crawler.get_page("https://yuchrszk.blogspot.com/2020/12/20208.html")
-        elems = self.crawler.safe_get(bs_object,
+        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        element = self.crawler.extract_element(bs_object,
                                         self.website["body_tag"])
-        self.assertGreater(len(elems), 0)
+        self.assertIsNotNone(element)
 
     def test_safe_get_abnormal_url_body(self):
-        bs_object = self.crawler.get_page("")
-        elems = self.crawler.safe_get(bs_object,
+        bs_object = self.crawler.get_bs_object("")
+        element = self.crawler.extract_element(bs_object,
                                      self.website["body_tag"])
-        self.assertEqual(len(elems), 0)
+        self.assertEqual(element, "")
     
     def test_format_urls_slash(self):
         urls = ["https://example/"]
@@ -77,6 +77,30 @@ class TestWebcraw(unittest.TestCase):
         
         result_urls = self.crawler.format_urls(urls)
         self.assertEqual(result_urls, answer_urls)
+    
+    def test_crawl_normal_url(self):
+        urls = self.crawler.crawl(self.website["domain"],
+                                  self.website["link_collector"],
+                                  times=2)
+        self.assertGreater(len(urls), 0)
+    
+    def test_crawl_abnormal_url(self):
+        urls = self.crawler.crawl("",
+                                  self.website["link_collector"],
+                                  times=2)
+        self.assertEqual(len(urls), 0)
+    
+    def test_crawl_abnormal_times(self):
+        urls = self.crawler.crawl(self.website["domain"],
+                                  self.website["link_collector"],
+                                  times=-2)
+        self.assertGreater(len(urls), 0)
+        
+        urls = self.crawler.crawl(self.website["domain"],
+                                  self.website["link_collector"],
+                                  times=10000000)
+        self.assertGreater(len(urls), 0)
+
 
 if __name__ == "__main__":
     unittest.main()
