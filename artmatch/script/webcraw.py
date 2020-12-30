@@ -38,8 +38,8 @@ class Crawler:
             urls[index] = re.sub(r"/$", "", url)
         return list(set(urls))
     
-    def crawl_urls(self,domein,link_collector,times=20):
-        base_url = domein
+    def crawl_urls(self,domain,link_collector,times=20):
+        base_url = domain
         progress = 0
         urls = []
         if (times <= 0) or (times >= 100):
