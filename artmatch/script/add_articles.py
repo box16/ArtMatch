@@ -1,6 +1,7 @@
+import re
 from webcraw import Crawler
 from db_access import DBAccess
-import re
+
 
 web_sites = [{"name": "LifeHacker",
               "domain": "https://www.lifehacker.jp/",
