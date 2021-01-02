@@ -9,6 +9,7 @@ artmatch/articles/migrations/*
 artmatch/script/__init__.py
 artmatch/script/__pycache__
 artmatch/script/test/__pycache__
+artmatch/script/files
 artmatch/db.sqlite3
 artmatch/manage.py
 ArtMatchDB

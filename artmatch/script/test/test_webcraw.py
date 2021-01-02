@@ -1,5 +1,5 @@
 import unittest
-from .webcraw import Crawler
+from ..webcraw import Crawler
 import re
 
 class TestWebcraw(unittest.TestCase):
