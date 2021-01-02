@@ -1,5 +1,5 @@
 import unittest
-from .db_access import DBAccess
+from ..db_access import DBAccess
 
 class TestDBAccess(unittest.TestCase):
     def setUp(self):
