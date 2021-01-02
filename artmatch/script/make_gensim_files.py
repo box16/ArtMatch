@@ -1,7 +1,8 @@
-from collections import defaultdict
-from gensim import corpora
 import os
-
+from gensim import corpora
+from gensim import models
+from gensim import similarities
+from collections import defaultdict
 from db_access import DBAccess
 from nlp import NLP
 
@@ -18,14 +19,26 @@ class MyCorpus():
 
 if __name__ == "__main__":
     corpus = MyCorpus()
+    
     dictionary = corpora.Dictionary(corpus)
     once_ids = [tokenid for tokenid, frequency in dictionary.dfs.items() if frequency == 1]
     dictionary.filter_tokens(once_ids)
     dictionary.compactify()
 
-    path = os.environ.get("CORPUSDIR")
-    dictionary.save(path+"dictionary.dict")
-    
     vector = [dictionary.doc2bow(tokens) for tokens in corpus]
-    corpora.MmCorpus.serialize(path+"vector.mm", vector)
     
+    tfidf = models.TfidfModel(vector)
+    corpus_tfidf = tfidf[vector]
+
+    lsi = models.LsiModel(corpus_tfidf, id2word=dictionary, num_topics=300)
+    corpus_lsi = lsi[corpus_tfidf]
+
+    path = os.environ.get("CORPUSDIR")
+    index = similarities.Similarity(path+"sim.index",corpus_lsi,300)
+
+    dictionary.save(path+"dictionary.dict")
+    corpora.MmCorpus.serialize(path+"vector.mm", vector)
+    tfidf.save(path+"model.tfidf")
+    lsi.save(path+"model.lsi")
+    index.save(path+"index.index")
+
