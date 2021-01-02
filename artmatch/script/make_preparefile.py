@@ -1,5 +1,4 @@
 from collections import defaultdict
-from pprint import pprint
 from gensim import corpora
 import os
 
