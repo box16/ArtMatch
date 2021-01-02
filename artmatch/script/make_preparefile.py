@@ -1,6 +1,7 @@
 from collections import defaultdict
 from pprint import pprint
 from gensim import corpora
+import os
 
 from db_access import DBAccess
 from nlp import NLP
@@ -22,3 +23,10 @@ if __name__ == "__main__":
     once_ids = [tokenid for tokenid, frequency in dictionary.dfs.items() if frequency == 1]
     dictionary.filter_tokens(once_ids)
     dictionary.compactify()
+
+    path = os.environ.get("CORPUSDIR")
+    dictionary.save(path+"dictionary.dict")
+    
+    vector = [dictionary.doc2bow(tokens) for tokens in corpus]
+    corpora.MmCorpus.serialize(path+"vector.mm", vector)
+    
