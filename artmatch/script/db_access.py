@@ -30,3 +30,8 @@ class DBAccess:
         with self._connection.cursor() as cursor:
             cursor.execute(f"INSERT INTO articles_articles (id,title,url,body) VALUES (nextval('articles_articles_id_seq'),'{title}','{url}','{body}');")
             self._connection.commit()
+
+    def slect_article_pick_body(self):
+        with self._connection.cursor() as cursor:
+            cursor.execute(f"SELECT body FROM articles_articles;")
+            return cursor.fetchall()

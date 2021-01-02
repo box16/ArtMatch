@@ -27,3 +27,10 @@ class TestNLP(unittest.TestCase):
         self.assertNotIn("は", result)
         self.assertNotIn("を", result)
         self.assertNotIn("です", result)
+    
+    def test_extract_legal_nouns_verbs_check_unknown(self):
+        """現時点では「マウスウォッシュ」が認識されなかった"""
+        document = "マウスウォッシュがヤバい"
+        result = self.nlp.extract_legal_nouns_verbs(document)
+
+        self.assertNotIn("マウスウォッシュ", result)

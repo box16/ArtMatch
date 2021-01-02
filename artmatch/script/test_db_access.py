@@ -34,3 +34,7 @@ class TestDBAccess(unittest.TestCase):
         text = "abcd"
         answer = "abcd"
         self.assertEqual(self.db_access.escape_single_quote(text),answer)
+    
+    def test_slect_article_pick_body(self):
+        bodys = self.db_access.slect_article_pick_body()
+        self.assertIsNotNone(bodys)

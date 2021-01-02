@@ -11,6 +11,9 @@ class NLP():
         token = self._mecab_dic.parseToNode(document)
         result = []
         while token:
+            if token.feature == "unknown":
+                token = token.next
+                continue
             part = token.feature.split(",")[0]
             origin = token.feature.split(",")[6]
             if (part == "名詞") or (part == "動詞"):
