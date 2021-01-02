@@ -31,7 +31,14 @@ class DBAccess:
             cursor.execute(f"INSERT INTO articles_articles (id,title,url,body) VALUES (nextval('articles_articles_id_seq'),'{title}','{url}','{body}');")
             self._connection.commit()
 
-    def slect_article_pick_body(self):
+    def slect_article_pick_one_body(self,offset):
         with self._connection.cursor() as cursor:
-            cursor.execute(f"SELECT body FROM articles_articles;")
-            return cursor.fetchall()
+            if (offset >= self.count_articles()) or (offset < 0):
+                return None
+            cursor.execute(f"SELECT body FROM articles_articles OFFSET {offset} LIMIT 1;")
+            return cursor.fetchone()[0]
+    
+    def count_articles(self):
+        with self._connection.cursor() as cursor:
+            cursor.execute(f"SELECT count(body) FROM articles_articles;")
+            return cursor.fetchone()[0]
