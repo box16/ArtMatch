@@ -8,7 +8,7 @@ class MyCorpus():
     def __init__(self):
         self.nlp = NLP()
         self.db_access = DBAccess()
-        self.pages_num = int(self.db_access.count_articles() * 0.8)
+        self.pages_num = self.db_access.count_articles()
 
     def __iter__(self):
         for index in range(self.pages_num):

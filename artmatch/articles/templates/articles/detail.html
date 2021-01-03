@@ -13,3 +13,14 @@
 </p>
 
 <p><a href="{% url 'articles:index' %}">記事一覧に戻る</a></p>
+
+<h2>類似記事</h2>
+{% if similar_articles %}
+    <ul>
+    {% for id,title in similar_articles.items %}
+        <li><a href="{% url 'articles:detail' id %}">{{ title }}</a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>類似記事はありません</p>
+{% endif %}
