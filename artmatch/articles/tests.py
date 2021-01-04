@@ -1,12 +1,10 @@
 from django.test import TestCase
-
-from django.test import TestCase
 from django.urls import reverse
 
-from .models import Articles
+from .models import Article
 
 def create_article(title="title",url="url",body="body"):
-    return Articles.objects.create(title=title,url=url,body=body)
+    return Article.objects.create(title=title,url=url,body=body)
 
 class IndexViewTests(TestCase):
     def test_no_articles(self):
@@ -20,7 +18,7 @@ class IndexViewTests(TestCase):
         response = self.client.get(reverse('articles:index'))
         self.assertQuerysetEqual(
             response.context['pick_up_articles'],
-            ['<Articles: title>']
+            ['<Article: title>']
         )
 
 class DetailViewTests(TestCase):

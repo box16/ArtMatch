@@ -30,14 +30,14 @@ class TestDBAccess(unittest.TestCase):
         dummy_url2 = "https://fugafuga.html"
         with self.db_access._connection.cursor() as cursor:
             cursor.execute(
-                f"INSERT INTO articles_articles (id,title,url,body) VALUES (99999,'title','{dummy_url1}','body');")
+                f"INSERT INTO articles_article (id,title,url,body) VALUES (99999,'title','{dummy_url1}','body');")
             self.assertTrue(self.db_access.check_dueto_insert(dummy_url2))
 
     def test_check_dueto_insert_false(self):
         dummy_url1 = "https://hogehoge.html"
         with self.db_access._connection.cursor() as cursor:
             cursor.execute(
-                f"INSERT INTO articles_articles (id,title,url,body) VALUES (99999,'title','{dummy_url1}','body');")
+                f"INSERT INTO articles_article (id,title,url,body) VALUES (99999,'title','{dummy_url1}','body');")
             self.assertFalse(self.db_access.check_dueto_insert(dummy_url1))
     
     def test_escape_single_quote_normal(self):
