@@ -6,10 +6,6 @@ artmatch/artmatch/wsgi.py
 artmatch/artmatch/__pycache__
 artmatch/articles/__pycache__
 artmatch/articles/migrations/*
-artmatch/articles/script/__init__.py
-artmatch/articles/script/__pycache__
-artmatch/articles/script/test/__pycache__
-artmatch/articles/script/files
 artmatch/db.sqlite3
 artmatch/manage.py
 ArtMatchDB

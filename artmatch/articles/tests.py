@@ -37,7 +37,7 @@ class DetailViewTests(TestCase):
     
     def test_abnormal_access(self):
         a = create_article()
-        url = reverse('articles:detail',args=(a.id+99,))
+        url = reverse('articles:detail',args=(a.id+999999,))
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 404)
