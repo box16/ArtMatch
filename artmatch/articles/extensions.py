@@ -1,4 +1,3 @@
-import psycopg2
 import os
 import re
 import MeCab
@@ -6,7 +5,9 @@ import requests
 import random
 from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
+from django.core.exceptions import ObjectDoesNotExist
 from bs4 import BeautifulSoup
+from .models import Article,Interest
 
 class Crawler:
     def __init__(self):
@@ -79,56 +80,47 @@ class NLP():
             token = token.next
         return result
 
-class DBAccess:
-    def __init__(self):
-        database_info = os.environ.get("ARTMATCHDB")
-        self._connection = psycopg2.connect(database_info)
-
+class DBAPI:
     def check_dueto_insert(self, url):
-        with self._connection.cursor() as cursor:
-            cursor.execute(f"SELECT url FROM articles_article WHERE url='{url}';")
-            result = cursor.fetchall()
-            if result:
-                return False
-            else:
-                return True
+        result = Article.objects.filter(url=url)
+        return len(result) == 0
     
     def escape_single_quote(self,text):
         return re.sub(r"\'", "\'\'", text)
     
     def insert_article(self,title="",url="",body=""):
-        """commit 入ってくるとテストが難しいため、テスト未作成"""
         if not self.check_dueto_insert(url):
             return
         if (not title) or (not url) or (not body):
             return
+        
         title = self.escape_single_quote(title)
         body = self.escape_single_quote(body)
-        with self._connection.cursor() as cursor:
-            cursor.execute(f"INSERT INTO articles_article (id,title,url,body) VALUES (nextval('articles_article_id_seq'),'{title}','{url}','{body}');")
-            self._connection.commit()
+        
+        article = Article.objects.create(title=title,url=url,body=body)
+        interest = article.interest_set.create()
+        article.save()
+        interest.save()
 
-    def slect_article_pick_one_body_id(self,offset):
-        with self._connection.cursor() as cursor:
-            if (offset >= self.count_articles()) or (offset < 0):
-                return None
-            cursor.execute(f"SELECT id,body FROM articles_article OFFSET {offset} LIMIT 1;")
-            return cursor.fetchone()
+    def select_article_pick_one_body_id(self,offset):
+        try:
+            pick_article = Article.objects.order_by('id')[offset:offset+1].get()
+            return (pick_article.id,pick_article.body)
+        except ObjectDoesNotExist:
+            return
     
     def count_articles(self):
-        with self._connection.cursor() as cursor:
-            cursor.execute(f"SELECT count(body) FROM articles_article;")
-            return cursor.fetchone()[0]
+        return len(Article.objects.all())
 
 class MyCorpus():
     def __init__(self):
         self.nlp = NLP()
-        self.db_access = DBAccess()
-        self.pages_num = self.db_access.count_articles()
+        self.db_api = DBAPI()
+        self.pages_num = self.db_api.count_articles()
 
     def __iter__(self):
         for index in range(self.pages_num):
-            pick_article = self.db_access.slect_article_pick_one_body_id(index)
+            pick_article = self.db_api.select_article_pick_one_body_id(index)
             body = self.nlp.extract_legal_nouns_verbs(pick_article[1])
             yield TaggedDocument(words=body, tags=[pick_article[0]])
 
