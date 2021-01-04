@@ -1,9 +1,9 @@
 import unittest
 import re
-from extensions import D2V
-from extensions import Crawler
-from extensions import DBAccess
-from extensions import NLP
+from .extensions import D2V
+from .extensions import Crawler
+from .extensions import DBAccess
+from .extensions import NLP
 
 class TestD2V(unittest.TestCase):
     def setUp(self):
