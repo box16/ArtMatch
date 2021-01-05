@@ -7,6 +7,10 @@ artmatch/artmatch/__pycache__
 artmatch/articles/__pycache__
 artmatch/articles/migrations/*
 artmatch/articles/static/articles/d2v.model
+artmatch/articles/management/__init__.py
+artmatch/articles/management/__pycache__/
+artmatch/articles/management/commands/__init__.py
+artmatch/articles/management/commands/__pycache__/
 artmatch/db.sqlite3
 artmatch/manage.py
 ArtMatchDB
