@@ -7,7 +7,8 @@ from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from django.core.exceptions import ObjectDoesNotExist
 from bs4 import BeautifulSoup
-from .models import Article,Interest
+from .models import Article, Interest
+
 
 class Crawler:
     def __init__(self):
@@ -19,8 +20,8 @@ class Crawler:
         except requests.exceptions.RequestException:
             return None
         return BeautifulSoup(req.text, "html.parser")
-    
-    def _collect_urls(self,bs_object,link_collector):
+
+    def _collect_urls(self, bs_object, link_collector):
         if not bs_object:
             return []
         result_urls = []
@@ -38,13 +39,13 @@ class Crawler:
             return '\n'.join([elem.get_text() for elem in selected_elems])
         else:
             return ""
-    
-    def _format_urls(self,urls):
-        for index,url in enumerate(urls):
+
+    def _format_urls(self, urls):
+        for index, url in enumerate(urls):
             urls[index] = re.sub(r"/$", "", url)
         return list(set(urls))
-    
-    def crawl_urls(self,domain,link_collector,times=20):
+
+    def crawl_urls(self, domain, link_collector, times=20):
         base_url = domain
         progress = 0
         urls = []
@@ -54,19 +55,20 @@ class Crawler:
             bs_object = self.get_bs_object(base_url)
             if not bs_object:
                 break
-            urls = urls + self._collect_urls(bs_object,link_collector)
+            urls = urls + self._collect_urls(bs_object, link_collector)
             urls = self._format_urls(urls)
             base_url = random.choice(urls)
             progress += 1
         return urls
+
 
 class NLP():
     def __init__(self):
         path = os.environ.get("MECABDIC")
         self._mecab_dic = MeCab.Tagger(f'--unk-feature "unknown" -d {path}')
         self._mecab_dic.parse("")
-    
-    def extract_legal_nouns_verbs(self,document):
+
+    def extract_legal_nouns_verbs(self, document):
         token = self._mecab_dic.parseToNode(document)
         result = []
         while token:
@@ -80,37 +82,40 @@ class NLP():
             token = token.next
         return result
 
+
 class DBAPI:
     def check_dueto_insert(self, url):
         result = Article.objects.filter(url=url)
         return len(result) == 0
-    
-    def escape_single_quote(self,text):
+
+    def escape_single_quote(self, text):
         return re.sub(r"\'", "\'\'", text)
-    
-    def insert_article(self,title="",url="",body=""):
+
+    def insert_article(self, title="", url="", body=""):
         if not self.check_dueto_insert(url):
             return
         if (not title) or (not url) or (not body):
             return
-        
+
         title = self.escape_single_quote(title)
         body = self.escape_single_quote(body)
-        
-        article = Article.objects.create(title=title,url=url,body=body)
+
+        article = Article.objects.create(title=title, url=url, body=body)
         interest = article.interest_set.create()
         article.save()
         interest.save()
 
-    def select_article_pick_one_body_id(self,offset):
+    def select_article_pick_one_body_id(self, offset):
         try:
-            pick_article = Article.objects.order_by('id')[offset:offset+1].get()
-            return (pick_article.id,pick_article.body)
+            pick_article = Article.objects.order_by(
+                'id')[offset:offset + 1].get()
+            return (pick_article.id, pick_article.body)
         except ObjectDoesNotExist:
             return
-    
+
     def count_articles(self):
         return len(Article.objects.all())
+
 
 class MyCorpus():
     def __init__(self):
@@ -124,11 +129,12 @@ class MyCorpus():
             body = self.nlp.extract_legal_nouns_verbs(pick_article[1])
             yield TaggedDocument(words=body, tags=[pick_article[0]])
 
+
 class D2V():
     def __init__(self):
         self.path = os.environ.get("CORPUSDIR")
         try:
-            self.model = Doc2Vec.load(self.path+"d2v.model")
+            self.model = Doc2Vec.load(self.path + "d2v.model")
         except FileNotFoundError:
             self.model = None
 
@@ -142,13 +148,19 @@ class D2V():
             min_count=10,
             workers=4)
         del(corpus)
-        model.save(self.path+"d2v.model")
+        model.save(self.path + "d2v.model")
         self.__init__()
-    
-    def find_similer_articles(self,id):
+
+    def find_similer_articles(self, id):
         try:
-            return [id for id,similality in self.model.docvecs.most_similar(positive={id, }, topn=5)]
-        except KeyError:#over idの時にKeyError
+            return [
+                id for id,
+                similality in self.model.docvecs.most_similar(
+                    positive={
+                        id,
+                    },
+                    topn=5)]
+        except KeyError:  # over idの時にKeyError
             return None
-        except IndexError:#かなりunder idの時にIndexError
+        except IndexError:  # かなりunder idの時にIndexError
             return None

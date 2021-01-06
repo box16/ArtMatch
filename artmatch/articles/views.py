@@ -3,6 +3,7 @@ from django.views import generic
 from .models import Article
 from .extensions import D2V
 
+
 class IndexView(generic.ListView):
     template_name = "articles/index.html"
     context_object_name = "pick_up_articles"
@@ -23,4 +24,4 @@ class DetailView(generic.DetailView):
         return context
 
     def get_queryset(self):
-         return Article.objects.all()
+        return Article.objects.all()
