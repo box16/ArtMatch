@@ -165,7 +165,9 @@ class TestWebcraw(unittest.TestCase):
 
 
 def create_article(title="title", url="url", body="body"):
-    return Article.objects.create(title=title, url=url, body=body)
+    article = Article.objects.create(title=title, url=url, body=body)
+    interest = Interest.objects.create(article_id=article.id)
+    return article
 
 
 class TestDBAPI(TestCase):
@@ -288,10 +290,45 @@ class DetailViewTests(TestCase):
         self.assertContains(response, a.url)
         self.assertContains(response, a.body)
         self.assertContains(response, "記事一覧に戻る")
+        self.assertContains(response, "類似記事")
+        self.assertContains(response, "好み登録")
 
     def test_abnormal_access(self):
         a = create_article()
         url = reverse('articles:detail', args=(a.id + 999999,))
         response = self.client.get(url)
+
+        self.assertEqual(response.status_code, 404)
+
+
+class VoteViewTests(TestCase):
+    def test_no_choice_submit(self):
+        a = create_article()
+        url = reverse('articles:vote', kwargs={"article_id": a.id})
+        response = self.client.post(url)
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, a.title)
+        self.assertContains(response, a.url)
+        self.assertContains(response, a.body)
+        self.assertContains(response, "好みが選択されずに登録ボタンが押されました")
+
+    def test_no_exists_similar_article(self):
+        a = create_article()
+        url = reverse('articles:vote', kwargs={"article_id": a.id})
+        response = self.client.post(
+            url, {"name": "preference", "value": "like"})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, a.title)
+        self.assertContains(response, a.url)
+        self.assertContains(response, a.body)
+        self.assertNotContains(response, "好み登録に失敗しました")
+
+    def test_no_exists_article(self):
+        a = create_article()
+        url = reverse('articles:vote', kwargs={"article_id": a.id + 99999})
+        response = self.client.post(
+            url, {"name": "preference", "value": "like"})
 
         self.assertEqual(response.status_code, 404)

@@ -42,7 +42,20 @@ def vote(request, article_id):
         base_interest = get_object_or_404(Interest, article_id=article_id)
         add_score = 1 if (request.POST["preference"] == "like") else -1
         update_list = [(base_interest, add_score)]
+    except KeyError:
+        return render(
+            request,
+            'articles/detail.html',
+            {
+                'article': Article.objects.get(
+                    pk=article_id),
+                'error_message': "好みが選択されずに登録ボタンが押されました",
+                'similar_articles': Article.objects.in_bulk(
+                    find_similer_articles(article_id))
+            }
+        )
 
+    try:
         similer_article = find_similer_articles(article_id, id_only=False)
         similer_interest = [
             (get_object_or_404(
@@ -53,21 +66,24 @@ def vote(request, article_id):
             similality in similer_article]
 
         update_list = update_list + similer_interest
+
         for interest, score in update_list:
             interest.interest_index += score
             interest.save()
+
         return HttpResponseRedirect(
             reverse(
                 'articles:detail', args=(
                     article_id,)))
-
-    except(KeyError, Interest.DoesNotExist):
+    except Interest.DoesNotExist:
         return render(
             request,
             'articles/detail.html',
             {
                 'article': Article.objects.get(
                     pk=article_id),
-                'error_message': "好みが選択されずに登録ボタンが押されました",
+                'error_message': "好み登録に失敗しました",
                 'similar_articles': Article.objects.in_bulk(
-                    find_similer_articles(article_id))})
+                    find_similer_articles(article_id))
+            }
+        )
