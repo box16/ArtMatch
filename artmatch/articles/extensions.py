@@ -153,13 +153,11 @@ class D2V():
 
     def find_similer_articles(self, id):
         try:
-            return [
-                id for id,
-                similality in self.model.docvecs.most_similar(
-                    positive={
-                        id,
-                    },
-                    topn=5)]
+            return self.model.docvecs.most_similar(
+                positive={
+                    id,
+                },
+                topn=10)
         except KeyError:  # over idの時にKeyError
             return None
         except IndexError:  # かなりunder idの時にIndexError

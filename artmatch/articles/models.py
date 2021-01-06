@@ -12,7 +12,7 @@ class Article(models.Model):
 
 class Interest(models.Model):
     article = models.ForeignKey(Article, on_delete=models.CASCADE)
-    interest_index = models.IntegerField(default=0)
+    interest_index = models.FloatField(default=0)
 
     def __str__(self):
         return f"{self.article.title}"

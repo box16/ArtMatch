@@ -1,20 +1,45 @@
 {% load static %}
-
 <link rel="stylesheet" type="text/css" href="{% static 'articles/style.css' %}">
 
-<h1>{{ article.title }}</h1>
+<h1>
+    {{ article.title }}
+</h1>
 
-{% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+{% if error_message %}
+    <p>
+        <strong>{{ error_message }}</strong>
+    </p>
+{% endif %}
 
-<p><a href={{article.url}}>元記事</a></p>
+<p>
+    <a href={{article.url}}>元記事</a>
+</p>
 
 <p id="main_text">
     {{article.body}}
 </p>
 
-<p><a href="{% url 'articles:index' %}">記事一覧に戻る</a></p>
+<p>
+    <a href="{% url 'articles:index' %}">記事一覧に戻る</a>
+</p>
 
-<h2>類似記事</h2>
+<form action="{% url 'articles:vote' article.id %}" method="post">
+    {% csrf_token %}
+    <input type="radio" name="preference" id="preference1" value="like">
+    <label for="preference1">好き！</label>
+
+    <input type="radio" name="preference" id="preference0" value="unlike">
+    <label for="preference0">嫌い...</label>
+    
+    <br>
+
+    <input type="submit" value="好み登録">
+</form>
+
+<h2>
+    類似記事
+</h2>
+
 {% if similar_articles %}
     <ul>
     {% for id,title in similar_articles.items %}
@@ -22,5 +47,7 @@
     {% endfor %}
     </ul>
 {% else %}
-    <p>類似記事はありません</p>
+    <p>
+        類似記事はありません
+    </p>
 {% endif %}
