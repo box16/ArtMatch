@@ -23,6 +23,13 @@ web_sites = [{"name": "LifeHacker",
               "link_collector": re.compile("^(https://gigazine.net/news/20)"),
               "link_creater": lambda domestic_url: domestic_url,
               },
+             {"name": "StudyHacker",
+              "domain": "https://studyhacker.net/",
+              "title_tag": "[class='entry-title']",
+              "body_tag": "[class='entry-content']",
+              "link_collector": re.compile("^(https://studyhacker.net/)(?!.*archive/)"),
+              "link_creater": lambda domestic_url: domestic_url,
+              },
              ]
 
 class Command(BaseCommand):
@@ -31,7 +38,8 @@ class Command(BaseCommand):
         dbapi = DBAPI()
         for site in web_sites:
             urls = crawler.crawl_urls(site["domain"],
-                                      site["link_collector"],times=1)
+                                      site["link_collector"],
+                                      times=20)
             
             for index,url in enumerate(urls):
                 urls[index] = site["link_creater"](url)
