@@ -1,7 +1,7 @@
-{% if pick_up_articles %}
+{% if no_preference_articles %}
     <ul>
-    {% for article in pick_up_articles %}
-        <li><a href="{% url 'articles:detail' article.id %}">{{ article.title }}</a></li>
+    {% for id,article in no_preference_articles.items %}
+        <li><a href="{% url 'articles:detail' id %}">{{ article.title }}</a></li>
     {% endfor %}
     </ul>
 {% else %}

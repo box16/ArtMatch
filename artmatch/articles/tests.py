@@ -268,13 +268,13 @@ class IndexViewTests(TestCase):
         response = self.client.get(reverse('articles:index'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "No articles are available.")
-        self.assertQuerysetEqual(response.context['pick_up_articles'], [])
+        self.assertQuerysetEqual(response.context['no_preference_articles'], [])
 
     def test_has_articles(self):
         a = create_article()
         response = self.client.get(reverse('articles:index'))
         self.assertQuerysetEqual(
-            response.context['pick_up_articles'],
+            response.context['no_preference_articles'].values(),
             ['<Article: title>']
         )
 
