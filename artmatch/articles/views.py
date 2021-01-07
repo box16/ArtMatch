@@ -41,8 +41,13 @@ class DetailView(generic.DetailView):
         return Article.objects.all()
 
 
+d2v = D2V()
+
+
 def find_similer_articles(base_id, id_only=True):
-    similer_article = D2V().find_similer_articles(base_id)
+    similer_article = d2v.find_similer_articles(base_id)
+    if not similer_article:
+        return []
     if id_only:
         return [id for id, similality in similer_article]
     else:
