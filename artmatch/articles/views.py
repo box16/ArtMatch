@@ -10,6 +10,14 @@ class IndexView(generic.ListView):
     template_name = "articles/index.html"
     context_object_name = "no_preference_articles"
 
+    def get_context_data(self, **kwargs):
+        """今のところおススメ記事はinterest_indexで見ている"""
+        context = super().get_context_data(**kwargs)
+        recommend_articles_id = [interest.article_id for interest in Interest.objects.order_by("interest_index").reverse().filter(interest_index__gt=0)[:20]]
+        recommend_articles = Article.objects.in_bulk(recommend_articles_id)
+        context['recommend_articles'] = recommend_articles
+        return context
+
     def get_queryset(self):
         no_preference_id = [interest.article_id for interest in Interest.objects.all().filter(interest_index=0)]
         return Article.objects.in_bulk(no_preference_id[:20])

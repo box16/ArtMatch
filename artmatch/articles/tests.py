@@ -266,51 +266,60 @@ class TestDBAPI(TestCase):
 class IndexViewTests(TestCase):
     def test_no_articles(self):
         response = self.client.get(reverse('articles:index'))
+        
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, "好み未登録の記事はありません")
-        self.assertQuerysetEqual(response.context['no_preference_articles'], [])
+        self.assertContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), [])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), [])
 
     def test_has_articles_interest_zero(self):
         a = create_article()
         response = self.client.get(reverse('articles:index'))
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title>']
-        )
+        
+        self.assertNotContains(response, "好み未登録の記事はありません")
+        self.assertContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), ['<Article: title>'])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), [])
     
     def test_has_articles_interest_greater_zero(self):
         a = create_article(interest_index=1)
         response = self.client.get(reverse('articles:index'))
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            []
-        )
+
+        self.assertContains(response, "好み未登録の記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), [])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), ['<Article: title>'])
     
     def test_has_articles_interest_greater_zero_zero(self):
         a0 = create_article(title="title0", url="url0", body="body0",interest_index=0)
         a1 = create_article(title="title1", url="url1", body="body1",interest_index=1)
         response = self.client.get(reverse('articles:index'))
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title0>']
-        )
+
+        self.assertNotContains(response, "好み未登録の記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), ['<Article: title0>'])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), ['<Article: title1>'])
 
     def test_has_articles_interest_less_zero(self):
         a = create_article(interest_index=-1)
         response = self.client.get(reverse('articles:index'))
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            []
-        )
+        
+        self.assertContains(response, "好み未登録の記事はありません")
+        self.assertContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), [])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), [])
 
     def test_has_articles_interest_less_zero_zero(self):
         a0 = create_article(title="title0", url="url0", body="body0",interest_index=0)
         a1 = create_article(title="title1", url="url1", body="body1",interest_index=-1)
         response = self.client.get(reverse('articles:index'))
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title0>']
-        )
+
+        self.assertNotContains(response, "好み未登録の記事はありません")
+        self.assertContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(response.context['no_preference_articles'].values(), ['<Article: title0>'])
+        self.assertQuerysetEqual(response.context['recommend_articles'].values(), [])
+
 
 class DetailViewTests(TestCase):
     def test_normal_access(self):
