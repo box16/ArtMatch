@@ -164,9 +164,9 @@ class TestWebcraw(unittest.TestCase):
         self.assertGreater(len(urls), 0)
 
 
-def create_article(title="title", url="url", body="body"):
+def create_article(title="title", url="url", body="body",interest_index=0):
     article = Article.objects.create(title=title, url=url, body=body)
-    interest = Interest.objects.create(article_id=article.id)
+    interest = Interest.objects.create(article_id=article.id,interest_index=interest_index)
     return article
 
 
@@ -267,17 +267,50 @@ class IndexViewTests(TestCase):
     def test_no_articles(self):
         response = self.client.get(reverse('articles:index'))
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "No articles are available.")
+        self.assertContains(response, "好み未登録の記事はありません")
         self.assertQuerysetEqual(response.context['no_preference_articles'], [])
 
-    def test_has_articles(self):
+    def test_has_articles_interest_zero(self):
         a = create_article()
         response = self.client.get(reverse('articles:index'))
         self.assertQuerysetEqual(
             response.context['no_preference_articles'].values(),
             ['<Article: title>']
         )
+    
+    def test_has_articles_interest_greater_zero(self):
+        a = create_article(interest_index=1)
+        response = self.client.get(reverse('articles:index'))
+        self.assertQuerysetEqual(
+            response.context['no_preference_articles'].values(),
+            []
+        )
+    
+    def test_has_articles_interest_greater_zero_zero(self):
+        a0 = create_article(title="title0", url="url0", body="body0",interest_index=0)
+        a1 = create_article(title="title1", url="url1", body="body1",interest_index=1)
+        response = self.client.get(reverse('articles:index'))
+        self.assertQuerysetEqual(
+            response.context['no_preference_articles'].values(),
+            ['<Article: title0>']
+        )
 
+    def test_has_articles_interest_less_zero(self):
+        a = create_article(interest_index=-1)
+        response = self.client.get(reverse('articles:index'))
+        self.assertQuerysetEqual(
+            response.context['no_preference_articles'].values(),
+            []
+        )
+
+    def test_has_articles_interest_less_zero_zero(self):
+        a0 = create_article(title="title0", url="url0", body="body0",interest_index=0)
+        a1 = create_article(title="title1", url="url1", body="body1",interest_index=-1)
+        response = self.client.get(reverse('articles:index'))
+        self.assertQuerysetEqual(
+            response.context['no_preference_articles'].values(),
+            ['<Article: title0>']
+        )
 
 class DetailViewTests(TestCase):
     def test_normal_access(self):

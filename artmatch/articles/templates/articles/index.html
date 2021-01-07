@@ -1,3 +1,4 @@
+<h2>好み未登録の記事</h2>
 {% if no_preference_articles %}
     <ul>
     {% for id,article in no_preference_articles.items %}
@@ -5,5 +6,5 @@
     {% endfor %}
     </ul>
 {% else %}
-    <p>No articles are available.</p>
+    <p>好み未登録の記事はありません</p>
 {% endif %}
