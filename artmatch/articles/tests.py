@@ -263,6 +263,36 @@ class TestDBAPI(TestCase):
 
     def test_count_articles_zero(self):
         self.assertEqual(self.api.count_articles(), 0)
+    
+    def test_update_body(self):
+        self.api.insert_article(title="title1", url="url1", body="body1")
+        pick1 = self.api.select_article_pick_one_body_id(0)
+        self.assertIsNotNone(pick1[0])
+        self.assertEqual(pick1[1], "body1")
+
+        self.api.update_body("url1","changed")
+        pick1 = self.api.select_article_pick_one_body_id(0)
+        self.assertIsNotNone(pick1[0])
+        self.assertEqual(pick1[1], "changed")
+
+    def test_select_article_pick_one_url_normal(self):
+        self.api.insert_article(title="title1", url="url1", body="body1")
+        self.api.insert_article(title="title2", url="url2", body="body2")
+
+        pick1 = self.api.select_article_pick_one_url(0)
+        self.assertIsNotNone(pick1)
+        self.assertEqual(pick1, "url1")
+
+        pick2 = self.api.select_article_pick_one_url(1)
+        self.assertIsNotNone(pick2[0])
+        self.assertEqual(pick2, "url2")
+
+    def test_select_article_pick_one_url_over_offset(self):
+        self.api.insert_article(title="title1", url="url1", body="body1")
+        self.api.insert_article(title="title2", url="url2", body="body2")
+
+        pick = self.api.select_article_pick_one_url(99)
+        self.assertIsNone(pick)
 
 
 class IndexViewTests(TestCase):

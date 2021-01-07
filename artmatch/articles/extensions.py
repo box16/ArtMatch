@@ -31,10 +31,14 @@ class Crawler:
             result_urls.append(link.attrs["href"])
         return list(set(result_urls))
 
-    def extract_element(self, bs_object, css_selector):
+    def extract_element(self, bs_object, css_selector,is_body=False):
         if not bs_object:
             return ""
         selected_elems = bs_object.select(css_selector)
+        
+        if is_body:
+            return selected_elems
+        
         if (selected_elems is not None) and (len(selected_elems) > 0):
             return '\n'.join([elem.get_text() for elem in selected_elems])
         else:
@@ -116,6 +120,16 @@ class DBAPI:
     def count_articles(self):
         return len(Article.objects.all())
 
+    def update_body(self,url,body):
+        article = Article.objects.filter(url=url).update(body=body)
+    
+    def select_article_pick_one_url(self, offset):
+        try:
+            pick_article = Article.objects.order_by(
+                'url')[offset:offset + 1].get()
+            return pick_article.url
+        except ObjectDoesNotExist:
+            return
 
 class MyCorpus():
     def __init__(self):
