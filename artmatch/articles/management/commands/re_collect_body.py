@@ -4,13 +4,13 @@ from articles.extensions import Crawler,DBAPI
 
 web_sites = [
              {"domain": "https://www.lifehacker.jp/",
-              "body_tag": "[id='realEntryBody'] p",
+              "body_tag": "[id='realEntryBody']",
               },
              {"domain": "https://yuchrszk.blogspot.com/",
               "body_tag": "[class='post-single-body post-body']",
               },
              {"domain": "https://gigazine.net/",
-              "body_tag": "[class='preface']",
+              "body_tag": "[class='cntimage']",
               },
              {"domain": "https://studyhacker.net/",
               "body_tag": "[class='entry-content']",
