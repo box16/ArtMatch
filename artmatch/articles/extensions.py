@@ -37,7 +37,7 @@ class Crawler:
         selected_elems = bs_object.select(css_selector)
 
         if is_body:
-            return selected_elems
+            return str(selected_elems[0])
 
         if (selected_elems is not None) and (len(selected_elems) > 0):
             return '\n'.join([elem.get_text() for elem in selected_elems])
