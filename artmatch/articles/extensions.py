@@ -109,12 +109,19 @@ class DBAPI:
         article.save()
         interest.save()
 
-    def select_article_pick_one_body_id(self, offset):
+    def pick_one_article(self, offset):
+        """id,body,url,titleの順で返す"""
         try:
             pick_article = Article.objects.order_by(
                 'id')[offset:offset + 1].get()
-            return (pick_article.id, pick_article.body)
+            return (
+                pick_article.id,
+                pick_article.body,
+                pick_article.url,
+                pick_article.title)
         except ObjectDoesNotExist:
+            return
+        except AssertionError:
             return
 
     def count_articles(self):
@@ -122,14 +129,6 @@ class DBAPI:
 
     def update_body(self, url, body):
         article = Article.objects.filter(url=url).update(body=body)
-
-    def select_article_pick_one_url(self, offset):
-        try:
-            pick_article = Article.objects.order_by(
-                'url')[offset:offset + 1].get()
-            return pick_article.url
-        except ObjectDoesNotExist:
-            return
 
 
 class MyCorpus():
@@ -140,7 +139,7 @@ class MyCorpus():
 
     def __iter__(self):
         for index in range(self.pages_num):
-            pick_article = self.db_api.select_article_pick_one_body_id(index)
+            pick_article = self.db_api.pick_one_article(index)
             body = self.nlp.extract_legal_nouns_verbs(pick_article[1])
             yield TaggedDocument(words=body, tags=[pick_article[0]])
 

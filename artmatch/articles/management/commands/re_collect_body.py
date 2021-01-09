@@ -24,7 +24,7 @@ class Command(BaseCommand):
         total_num = dbapi.count_articles()
         for index in range(total_num):
             print(f"{index}/{total_num}")
-            pick_url = dbapi.select_article_pick_one_url(index)
+            pick_url = dbapi.pick_one_article(index)[2]
             bs_object = crawler.get_bs_object(pick_url)
             print(f"{pick_url}")
             for site in web_sites:
