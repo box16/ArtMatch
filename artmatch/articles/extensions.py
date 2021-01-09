@@ -145,6 +145,12 @@ class DBAPI:
             interest.article_id for interest in Interest.objects.all().filter(
                 interest_index=0)]
 
+    def pick_body_select_id(self,id):
+        try:
+            return Article.objects.filter(id=id).get().body
+        except Article.DoesNotExist:
+            return ""
+
 
 class MyCorpus():
     def __init__(self):
