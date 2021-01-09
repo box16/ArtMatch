@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.urls import reverse
 from .models import Article, Interest
-from .extensions import D2V
+from .extensions import D2V, DBAPI
 
 
 class IndexView(generic.ListView):
@@ -13,8 +13,8 @@ class IndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         """今のところおススメ記事はinterest_indexで見ている"""
         context = super().get_context_data(**kwargs)
-        recommend_articles_id = [interest.article_id for interest in Interest.objects.order_by(
-            "interest_index").reverse().filter(interest_index__gt=0)[:20]]
+        recommend_articles_id = DBAPI(
+        ).select_top_articles_id_sorted_interest_index()[:20]
         recommend_articles = Article.objects.in_bulk(recommend_articles_id)
         context['recommend_articles'] = recommend_articles
         return context

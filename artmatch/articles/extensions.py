@@ -3,6 +3,7 @@ import re
 import MeCab
 import requests
 import random
+import math
 from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from django.core.exceptions import ObjectDoesNotExist
@@ -129,6 +130,15 @@ class DBAPI:
 
     def update_body(self, url, body):
         article = Article.objects.filter(url=url).update(body=body)
+
+    def select_top_articles_id_sorted_interest_index(self, positive=True):
+        max_articles_num = math.ceil(self.count_articles() * 0.2)
+        if positive:
+            return [interest.article_id for interest in Interest.objects.order_by(
+                "interest_index").reverse().filter(interest_index__gt=0)[:max_articles_num]]
+        else:
+            return [interest.article_id for interest in Interest.objects.order_by(
+                "interest_index").filter(interest_index__lt=0)[:max_articles_num]]
 
 
 class MyCorpus():
