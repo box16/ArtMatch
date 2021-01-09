@@ -140,6 +140,11 @@ class DBAPI:
             return [interest.article_id for interest in Interest.objects.order_by(
                 "interest_index").filter(interest_index__lt=0)[:max_articles_num]]
 
+    def select_articles_id_interest_index_zero(self):
+        return [
+            interest.article_id for interest in Interest.objects.all().filter(
+                interest_index=0)]
+
 
 class MyCorpus():
     def __init__(self):

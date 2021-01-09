@@ -169,6 +169,8 @@ def create_article(title="title", url="url", body="body", interest_index=0):
     interest = Interest.objects.create(
         article_id=article.id,
         interest_index=interest_index)
+    article.save()
+    interest.save()
     return article
 
 
@@ -237,8 +239,16 @@ class TestDBAPI(TestCase):
         self.assertEqual(len(Interest.objects.all()), 2)
 
     def test_pick_one_article_id_body_normal(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick1 = self.api.pick_one_article(0)
         self.assertIsNotNone(pick1[0])
@@ -249,22 +259,46 @@ class TestDBAPI(TestCase):
         self.assertEqual(pick2[1], "body2")
 
     def test_pick_one_article_id_body_over_offset(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick = self.api.pick_one_article(99)
         self.assertIsNone(pick)
 
     def test_pick_one_article_id_body_under_offset(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick = self.api.pick_one_article(-1)
         self.assertIsNone(pick)
 
     def test_pick_one_article_url_normal(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick1 = self.api.pick_one_article(0)[2]
         self.assertIsNotNone(pick1)
@@ -275,22 +309,46 @@ class TestDBAPI(TestCase):
         self.assertEqual(pick2, "url2")
 
     def test_pick_one_article_url_over_offset(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick = self.api.pick_one_article(99)
         self.assertIsNone(pick)
 
     def test_pick_one_article_url_under_offset(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         pick = self.api.pick_one_article(-1)
         self.assertIsNone(pick)
 
     def test_count_articles_normal(self):
-        self.api.insert_article(title="title1", url="url1", body="body1")
-        self.api.insert_article(title="title2", url="url2", body="body2")
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=0)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
 
         self.assertEqual(self.api.count_articles(), 2)
 
@@ -299,14 +357,17 @@ class TestDBAPI(TestCase):
 
     def test_update_body(self):
         self.api.insert_article(title="title1", url="url1", body="body1")
-        pick1 = self.api.pick_one_article(0)
-        self.assertIsNotNone(pick1[0])
-        self.assertEqual(pick1[1], "body1")
+        pick = self.api.pick_one_article(0)
+        self.assertIsNotNone(pick)
+        self.assertEqual(pick[1], "body1")
 
         self.api.update_body("url1", "changed")
-        pick1 = self.api.pick_one_article(0)
-        self.assertIsNotNone(pick1[0])
-        self.assertEqual(pick1[1], "changed")
+        pick = self.api.pick_one_article(0)
+        self.assertIsNotNone(pick)
+        self.assertEqual(pick[1], "changed")
+
+    def test_select_top_articles_id_sorted_interest_index_lower_limit(self):
+        pass
 
 
 class IndexViewTests(TestCase):
