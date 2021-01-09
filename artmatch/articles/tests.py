@@ -367,7 +367,146 @@ class TestDBAPI(TestCase):
         self.assertEqual(pick[1], "changed")
 
     def test_select_top_articles_id_sorted_interest_index_lower_limit(self):
-        pass
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=1)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=-1)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=True)
+        self.assertEqual(len(ids), 1)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=False)
+        self.assertEqual(len(ids), 1)
+
+    def test_select_top_articles_id_sorted_interest_index_positive_max_num(
+            self):
+        create_article(
+            title="title",
+            url="url1",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url2",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url3",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url4",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url5",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url6",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url7",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url8",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url9",
+            body="body",
+            interest_index=1)
+        create_article(
+            title="title",
+            url="url0",
+            body="body",
+            interest_index=1)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=True)
+        self.assertEqual(len(ids), 2)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=False)
+        self.assertEqual(len(ids), 0)
+
+    def test_select_top_articles_id_sorted_interest_index_negative_max_num(
+            self):
+        create_article(
+            title="title",
+            url="url1",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url2",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url3",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url4",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url5",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url6",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url7",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url8",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url9",
+            body="body",
+            interest_index=-1)
+        create_article(
+            title="title",
+            url="url0",
+            body="body",
+            interest_index=-1)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=True)
+        self.assertEqual(len(ids), 0)
+
+        ids = self.api.select_top_articles_id_sorted_interest_index(
+            positive=False)
+        self.assertEqual(len(ids), 2)
 
 
 class IndexViewTests(TestCase):
