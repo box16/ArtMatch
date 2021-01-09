@@ -508,6 +508,36 @@ class TestDBAPI(TestCase):
             positive=False)
         self.assertEqual(len(ids), 2)
 
+    def test_select_articles_id_interest_index_zero_normal(self):
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=1)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=0)
+
+        ids = self.api.select_articles_id_interest_index_zero()
+        self.assertEqual(len(ids), 1)
+
+    def test_select_articles_id_interest_index_zero_abnormal(self):
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=1)
+        create_article(
+            title="title2",
+            url="url2",
+            body="body2",
+            interest_index=-1)
+
+        ids = self.api.select_articles_id_interest_index_zero()
+        self.assertEqual(len(ids), 0)
+
 
 class IndexViewTests(TestCase):
     def test_no_articles(self):
