@@ -11,7 +11,7 @@ class Article(models.Model):
 
 
 class Interest(models.Model):
-    article = models.ForeignKey(Article, on_delete=models.CASCADE)
+    article = models.OneToOneField(Article, on_delete=models.CASCADE)
     interest_index = models.FloatField(default=0)
 
     def __str__(self):
@@ -30,3 +30,11 @@ class NegativeWord(models.Model):
 
     def __str__(self):
         return f"{self.word}"
+
+
+class Score(models.Model):
+    article = models.OneToOneField(Article, on_delete=models.CASCADE)
+    score = models.IntegerField(default=50)
+
+    def __str__(self):
+        return f"{self.article.title} : {self.score}"

@@ -6,7 +6,7 @@ from .extensions import D2V
 from .extensions import Crawler
 from .extensions import NLP
 from .extensions import DBAPI
-from .models import Article, Interest
+from .models import Article, Interest, Score
 
 
 class TestD2V(unittest.TestCase):
@@ -566,24 +566,72 @@ class TestDBAPI(TestCase):
         self.assertEqual(body, "")
 
     def test_insert_positive_word(self):
-        self.assertEqual(self.api.insert_positive_word("sample"), 1)
-        self.assertEqual(self.api.insert_positive_word("sample"), 0)
+        self.assertEqual(self.api.insert_word("sample", positive=True), 1)
+        self.assertEqual(self.api.insert_word("sample", positive=True), 0)
 
     def test_insert_negative_word(self):
-        self.assertEqual(self.api.insert_negative_word("sample"), 1)
-        self.assertEqual(self.api.insert_negative_word("sample"), 0)
+        self.assertEqual(self.api.insert_word("sample", positive=False), 1)
+        self.assertEqual(self.api.insert_word("sample", positive=False), 0)
 
     def test_check_already_exists_positive_word(self):
-        self.api.insert_positive_word("sample")
-        self.assertTrue(self.api.check_already_exists_positive_word("sample"))
+        self.api.insert_word("sample", positive=True)
+        self.assertTrue(
+            self.api.check_already_exists_word(
+                "sample", positive=True))
         self.assertFalse(
-            self.api.check_already_exists_positive_word("1sample1"))
+            self.api.check_already_exists_word("1sample1", positive=True))
 
     def test_check_already_exists_negative_word(self):
-        self.api.insert_negative_word("sample")
-        self.assertTrue(self.api.check_already_exists_negative_word("sample"))
+        self.api.insert_word("sample", positive=False)
+        self.assertTrue(
+            self.api.check_already_exists_word(
+                "sample", positive=False))
         self.assertFalse(
-            self.api.check_already_exists_negative_word("1sample1"))
+            self.api.check_already_exists_word("1sample1", positive=False))
+
+    def test_select_word(self):
+        self.api.insert_word("posi1", positive=True)
+        self.api.insert_word("posi2", positive=True)
+        self.api.insert_word("posi3", positive=True)
+        self.assertListEqual(
+            self.api.select_word(
+                positive=True), [
+                "posi1", "posi2", "posi3"])
+
+        self.api.insert_word("nega1", positive=False)
+        self.api.insert_word("nega2", positive=False)
+        self.api.insert_word("nega3", positive=False)
+        self.assertListEqual(
+            self.api.select_word(
+                positive=False), [
+                "nega1", "nega2", "nega3"])
+
+    def test_update_score_where_article_id_normal(self):
+        self.api.insert_article(title="title1", url="url1", body="body1")
+        article = self.api.select_articles_offset_limit_one(0)
+
+        self.assertEqual(Score.objects.get(article__pk=article[0]).score, 50)
+
+        self.api.update_score_where_article_id(article[0], 60)
+        self.assertEqual(Score.objects.get(article__pk=article[0]).score, 60)
+
+    def test_update_score_where_article_id_no_article(self):
+        self.api.insert_article(title="title1", url="url1", body="body1")
+        article = self.api.select_articles_offset_limit_one(0)
+
+        result = self.api.update_score_where_article_id(article[0] + 99, 60)
+        self.assertEqual(result, 0)
+
+    def test_update_score_where_article_id_no_score(self):
+        create_article(
+            title="title1",
+            url="url1",
+            body="body1",
+            interest_index=1)
+        article = self.api.select_articles_offset_limit_one(0)
+        result = self.api.update_score_where_article_id(article[0], 60)
+        self.assertEqual(result, 1)
+        self.assertEqual(Score.objects.get(article__pk=article[0]).score, 60)
 
 
 class IndexViewTests(TestCase):

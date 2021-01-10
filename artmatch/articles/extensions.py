@@ -9,7 +9,7 @@ from gensim.models.doc2vec import TaggedDocument
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from bs4 import BeautifulSoup
-from .models import Article, Interest, PositiveWord, NegativeWord
+from .models import Article, Interest, PositiveWord, NegativeWord, Score
 
 
 class Crawler:
@@ -110,9 +110,12 @@ class DBAPI:
         body = self.escape_single_quote(body)
 
         article = Article.objects.create(title=title, url=url, body=body)
-        interest = article.interest_set.create()
         article.save()
+
+        interest = Interest.objects.create(article=article)
+        score = Score.objects.create(article=article)
         interest.save()
+        score.save()
         return 1
 
     def select_articles_offset_limit_one(self, offset):
@@ -156,29 +159,36 @@ class DBAPI:
         except Article.DoesNotExist:
             return ""
 
-    def insert_positive_word(self, word):
+    def insert_word(self, word, positive=True):
+        table = PositiveWord if positive else NegativeWord
         try:
-            positive_word = PositiveWord.objects.create(word=word)
+            positive_word = table.objects.create(word=word)
             positive_word.save()
             return 1
         except IntegrityError:
             return 0
 
-    def insert_negative_word(self, word):
+    def check_already_exists_word(self, word, positive=True):
+        table = PositiveWord if positive else NegativeWord
+        result = table.objects.filter(word=word)
+        return len(result) > 0
+
+    def select_word(self, positive=True):
+        table = PositiveWord if positive else NegativeWord
+        return [_object.word for _object in table.objects.all()]
+
+    def update_score_where_article_id(self, article_id, given_score):
         try:
-            negative_word = NegativeWord.objects.create(word=word)
-            negative_word.save()
+            article = Article.objects.get(pk=article_id)
+            _score = Score.objects.get(article__pk=article_id)
+            _score.score = given_score
+            _score.save()
             return 1
-        except IntegrityError:
+        except Article.DoesNotExist:
             return 0
-
-    def check_already_exists_positive_word(self, word):
-        result = PositiveWord.objects.filter(word=word)
-        return len(result) > 0
-
-    def check_already_exists_negative_word(self, word):
-        result = NegativeWord.objects.filter(word=word)
-        return len(result) > 0
+        except Score.DoesNotExist:
+            Score.objects.create(article=article, score=given_score)
+            return 1
 
 
 class MyCorpus():
