@@ -1,4 +1,7 @@
 import itertools
+import collections
+import math
+from gensim import corpora,models
 from django.core.management.base import BaseCommand
 from articles.extensions import NLP,DBAPI
 
@@ -12,21 +15,28 @@ class Command(BaseCommand):
 
         top_body = [dbapi.pick_body_select_id(id) for id in top_id]
         worst_body = [dbapi.pick_body_select_id(id) for id in worst_id]
-        del(top_id)
-        del(worst_id)
 
         top_words = [nlp.extract_legal_nouns_verbs(body) for body in top_body]
         worst_words = [nlp.extract_legal_nouns_verbs(body) for body in worst_body]
-        del(top_body)
-        del(worst_body)
 
-        top_words = set(itertools.chain.from_iterable(top_words))
-        worst_words = set(itertools.chain.from_iterable(worst_words))
+        top_set = self.pick_important_words(top_words)
+        worst_set = self.pick_important_words(worst_words)
 
-        result_top_words = top_words - worst_words
-        result_worst_words = worst_words - top_words
-        print()
-        print(result_top_words)
-        print()
-        print(result_worst_words)
-
+        top_result = top_set - worst_set
+        worst_result = worst_set - top_set
+        print(top_result)
+        print("------------------------------")
+        print(worst_result)
+    
+    def pick_important_words(self,words):
+        dictionary = corpora.Dictionary(words)
+        corpus = [dictionary.doc2bow(word) for word in words]
+        tfidf = models.TfidfModel(corpus)
+        corpus_tfidf = tfidf[corpus]
+        result = []
+        for doc in corpus_tfidf:
+            for word in doc:
+                result += [(dictionary[word[0]],word[1])]
+        pick_num = math.ceil(len(result)*0.2)
+        result = set([word for word,value in sorted(result,key=lambda x:x[1],reverse=True)[:pick_num]])
+        return result
