@@ -41,16 +41,16 @@ class Command(BaseCommand):
         del(negative_set)
 
         for word in positive_result:
-            #今回はpositiveとして取られたが、過去にnegativeとして登録されているものは除外
-            if dbapi.check_already_exists_word(word,positive=False):
+            # 今回はpositiveとして取られたが、過去にnegativeとして登録されているものは除外
+            if dbapi.check_already_exists_word(word, positive=False):
                 continue
-            dbapi.insert_word(word,positive=True)
+            dbapi.insert_word(word, positive=True)
 
         for word in negative_result:
-            #今回はnegativeとして取られたが、過去にpositiveとして登録されているものは除外
-            if dbapi.check_already_exists_word(word,positive=True):
+            # 今回はnegativeとして取られたが、過去にpositiveとして登録されているものは除外
+            if dbapi.check_already_exists_word(word, positive=True):
                 continue
-            dbapi.insert_word(word,positive=False)
+            dbapi.insert_word(word, positive=False)
 
     def pick_important_words(self, words):
         dictionary = corpora.Dictionary(words)
