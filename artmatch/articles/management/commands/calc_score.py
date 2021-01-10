@@ -14,7 +14,9 @@ class Command(BaseCommand):
         negative_words_num = len(negative_words)
 
         id_hits_score_set = {}
-        for index in range(dbapi.count_articles()):
+        total_num = dbapi.count_articles()
+        for index in range(total_num):
+            print(f"{index}/{total_num}")
             article = dbapi.select_articles_offset_limit_one(index)
 
             positive_hits = 0
@@ -34,5 +36,15 @@ class Command(BaseCommand):
         del(positive_words)
         del(negative_words)
 
-        hits_score_average = numpy.average(id_hits_score_set.values())
-        hits_score_std = numpy.std(id_hits_score_set.values())
+        hits_score_average = numpy.average(
+            [float(value) for value in id_hits_score_set.values()])
+        hits_score_std = numpy.std([float(value)
+                                    for value in id_hits_score_set.values()])
+
+        counter = 0
+        for _id, hits_score in id_hits_score_set.items():
+            print(f"{counter}/{total_num}")
+            score = int(
+                ((hits_score - hits_score_average) / hits_score_std) * 10) + 50
+            dbapi.update_score_where_article_id(_id, score)
+            counter += 1
