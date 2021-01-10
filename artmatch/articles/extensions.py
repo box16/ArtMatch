@@ -156,28 +156,18 @@ class DBAPI:
         except Article.DoesNotExist:
             return ""
 
-    def insert_positive_word(self, word):
+    def insert_word(self, word, positive=True):
+        table = PositiveWord if positive else NegativeWord
         try:
-            positive_word = PositiveWord.objects.create(word=word)
+            positive_word = table.objects.create(word=word)
             positive_word.save()
             return 1
         except IntegrityError:
             return 0
 
-    def insert_negative_word(self, word):
-        try:
-            negative_word = NegativeWord.objects.create(word=word)
-            negative_word.save()
-            return 1
-        except IntegrityError:
-            return 0
-
-    def check_already_exists_positive_word(self, word):
-        result = PositiveWord.objects.filter(word=word)
-        return len(result) > 0
-
-    def check_already_exists_negative_word(self, word):
-        result = NegativeWord.objects.filter(word=word)
+    def check_already_exists_word(self, word, positive=True):
+        table = PositiveWord if positive else NegativeWord
+        result = table.objects.filter(word=word)
         return len(result) > 0
 
 
