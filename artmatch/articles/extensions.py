@@ -209,6 +209,8 @@ class D2V():
         self.path = os.environ.get("CORPUSDIR")
         try:
             self.model = Doc2Vec.load(self.path + "d2v.model")
+        except TypeError:
+            self.model = Doc2Vec.load("d2v.model")
         except FileNotFoundError:
             self.model = None
 
