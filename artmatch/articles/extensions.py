@@ -3,11 +3,13 @@ import re
 import MeCab
 import requests
 import random
+import math
 from gensim.models.doc2vec import Doc2Vec
 from gensim.models.doc2vec import TaggedDocument
 from django.core.exceptions import ObjectDoesNotExist
+from django.db import IntegrityError
 from bs4 import BeautifulSoup
-from .models import Article, Interest
+from .models import Article, Interest, PositiveWord, NegativeWord
 
 
 class Crawler:
@@ -36,8 +38,11 @@ class Crawler:
             return ""
         selected_elems = bs_object.select(css_selector)
 
-        if is_body:
-            return str(selected_elems[0])
+        try:
+            if is_body:
+                return str(selected_elems[0])
+        except IndexError:
+            return "取得エラー！！"
 
         if (selected_elems is not None) and (len(selected_elems) > 0):
             return '\n'.join([elem.get_text() for elem in selected_elems])
@@ -88,7 +93,7 @@ class NLP():
 
 
 class DBAPI:
-    def check_dueto_insert(self, url):
+    def due_to_insert_articles(self, url):
         result = Article.objects.filter(url=url)
         return len(result) == 0
 
@@ -96,10 +101,10 @@ class DBAPI:
         return re.sub(r"\'", "\'\'", text)
 
     def insert_article(self, title="", url="", body=""):
-        if not self.check_dueto_insert(url):
-            return
+        if not self.due_to_insert_articles(url):
+            return 0
         if (not title) or (not url) or (not body):
-            return
+            return 0
 
         title = self.escape_single_quote(title)
         body = self.escape_single_quote(body)
@@ -108,28 +113,72 @@ class DBAPI:
         interest = article.interest_set.create()
         article.save()
         interest.save()
+        return 1
 
-    def select_article_pick_one_body_id(self, offset):
+    def select_articles_offset_limit_one(self, offset):
+        """id,body,url,titleの順で返す"""
         try:
             pick_article = Article.objects.order_by(
                 'id')[offset:offset + 1].get()
-            return (pick_article.id, pick_article.body)
+            return (
+                pick_article.id,
+                pick_article.body,
+                pick_article.url,
+                pick_article.title)
         except ObjectDoesNotExist:
+            return
+        except AssertionError:
             return
 
     def count_articles(self):
         return len(Article.objects.all())
 
-    def update_body(self, url, body):
+    def update_body_from_articles_where_url(self, url, body):
         article = Article.objects.filter(url=url).update(body=body)
 
-    def select_article_pick_one_url(self, offset):
+    def select_id_from_articles_sort_limit_top_twenty(self, positive=True):
+        max_articles_num = math.ceil(self.count_articles() * 0.2)
+        if positive:
+            return [interest.article_id for interest in Interest.objects.order_by(
+                "interest_index").reverse().filter(interest_index__gt=0)[:max_articles_num]]
+        else:
+            return [interest.article_id for interest in Interest.objects.order_by(
+                "interest_index").filter(interest_index__lt=0)[:max_articles_num]]
+
+    def select_id_from_articles_where_interest_index_zero(self):
+        return [
+            interest.article_id for interest in Interest.objects.all().filter(
+                interest_index=0)]
+
+    def select_body_from_articles_where_id(self, id):
         try:
-            pick_article = Article.objects.order_by(
-                'url')[offset:offset + 1].get()
-            return pick_article.url
-        except ObjectDoesNotExist:
-            return
+            return Article.objects.filter(id=id).get().body
+        except Article.DoesNotExist:
+            return ""
+
+    def insert_positive_word(self, word):
+        try:
+            positive_word = PositiveWord.objects.create(word=word)
+            positive_word.save()
+            return 1
+        except IntegrityError:
+            return 0
+
+    def insert_negative_word(self, word):
+        try:
+            negative_word = NegativeWord.objects.create(word=word)
+            negative_word.save()
+            return 1
+        except IntegrityError:
+            return 0
+
+    def check_already_exists_positive_word(self, word):
+        result = PositiveWord.objects.filter(word=word)
+        return len(result) > 0
+
+    def check_already_exists_negative_word(self, word):
+        result = NegativeWord.objects.filter(word=word)
+        return len(result) > 0
 
 
 class MyCorpus():
@@ -140,7 +189,7 @@ class MyCorpus():
 
     def __iter__(self):
         for index in range(self.pages_num):
-            pick_article = self.db_api.select_article_pick_one_body_id(index)
+            pick_article = self.db_api.select_articles_offset_limit_one(index)
             body = self.nlp.extract_legal_nouns_verbs(pick_article[1])
             yield TaggedDocument(words=body, tags=[pick_article[0]])
 
