@@ -11,29 +11,40 @@ class Command(BaseCommand):
         nlp = NLP()
         dbapi = DBAPI()
 
-        top_id = dbapi.select_top_articles_id_sorted_interest_index(
+        positive_id = dbapi.select_id_from_articles_sort_limit_top_twenty(
             positive=True)
-        worst_id = dbapi.select_top_articles_id_sorted_interest_index(
+        negative_id = dbapi.select_id_from_articles_sort_limit_top_twenty(
             positive=False)
 
-        top_body = [dbapi.pick_body_select_id(id) for id in top_id]
-        worst_body = [dbapi.pick_body_select_id(id) for id in worst_id]
-        del(top_id)
-        del(worst_id)
+        positive_body = [dbapi.select_body_from_articles_where_id(id) for id in positive_id]
+        negative_body = [dbapi.select_body_from_articles_where_id(id) for id in negative_id]
+        del(positive_id)
+        del(negative_id)
 
-        top_words = [nlp.extract_legal_nouns_verbs(body) for body in top_body]
-        worst_words = [nlp.extract_legal_nouns_verbs(
-            body) for body in worst_body]
-        del(top_body)
-        del(worst_body)
+        positive_words = [nlp.extract_legal_nouns_verbs(body) for body in positive_body]
+        negative_words = [nlp.extract_legal_nouns_verbs(body) for body in negative_body]
+        del(positive_body)
+        del(negative_body)
 
-        top_set = self.pick_important_words(top_words)
-        worst_set = self.pick_important_words(worst_words)
-        del(top_words)
-        del(worst_words)
+        positive_set = self.pick_important_words(positive_words)
+        negative_set = self.pick_important_words(negative_words)
+        del(positive_words)
+        del(negative_words)
 
-        top_result = top_set - worst_set
-        worst_result = worst_set - top_set
+        positive_result = positive_set - negative_set
+        negative_result = negative_set - positive_set
+        del(positive_set)
+        del(negative_set)
+
+        for word in positive_result:
+            if dbapi.check_already_exists_negative_word(word):
+                continue
+            dbapi.insert_positive_word(word)
+
+        for word in negative_result:
+            if dbapi.check_already_exists_positive_word(word):
+                continue
+            dbapi.insert_negative_word(word)
 
     def pick_important_words(self, words):
         dictionary = corpora.Dictionary(words)

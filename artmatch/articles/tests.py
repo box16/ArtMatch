@@ -178,10 +178,10 @@ class TestDBAPI(TestCase):
     def setUp(self):
         self.api = DBAPI()
 
-    def test_check_dueto_insert(self):
+    def test_due_to_insert_articles(self):
         article = create_article()
-        self.assertFalse(self.api.check_dueto_insert("url"))
-        self.assertTrue(self.api.check_dueto_insert("sample"))
+        self.assertFalse(self.api.due_to_insert_articles("url"))
+        self.assertTrue(self.api.due_to_insert_articles("sample"))
 
     def test_escape_single_quote_normal(self):
         text = "ab'cd"
@@ -238,7 +238,7 @@ class TestDBAPI(TestCase):
         self.assertEqual(len(Article.objects.all()), 2)
         self.assertEqual(len(Interest.objects.all()), 2)
 
-    def test_pick_one_article_id_body_normal(self):
+    def test_select_articles_offset_limit_one_id_body_normal(self):
         create_article(
             title="title1",
             url="url1",
@@ -250,15 +250,15 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick1 = self.api.pick_one_article(0)
+        pick1 = self.api.select_articles_offset_limit_one(0)
         self.assertIsNotNone(pick1[0])
         self.assertEqual(pick1[1], "body1")
 
-        pick2 = self.api.pick_one_article(1)
+        pick2 = self.api.select_articles_offset_limit_one(1)
         self.assertIsNotNone(pick2[0])
         self.assertEqual(pick2[1], "body2")
 
-    def test_pick_one_article_id_body_over_offset(self):
+    def test_select_articles_offset_limit_one_id_body_over_offset(self):
         create_article(
             title="title1",
             url="url1",
@@ -270,10 +270,10 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick = self.api.pick_one_article(99)
+        pick = self.api.select_articles_offset_limit_one(99)
         self.assertIsNone(pick)
 
-    def test_pick_one_article_id_body_under_offset(self):
+    def test_select_articles_offset_limit_one_id_body_under_offset(self):
         create_article(
             title="title1",
             url="url1",
@@ -285,10 +285,10 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick = self.api.pick_one_article(-1)
+        pick = self.api.select_articles_offset_limit_one(-1)
         self.assertIsNone(pick)
 
-    def test_pick_one_article_url_normal(self):
+    def test_select_articles_offset_limit_one_url_normal(self):
         create_article(
             title="title1",
             url="url1",
@@ -300,15 +300,15 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick1 = self.api.pick_one_article(0)[2]
+        pick1 = self.api.select_articles_offset_limit_one(0)[2]
         self.assertIsNotNone(pick1)
         self.assertEqual(pick1, "url1")
 
-        pick2 = self.api.pick_one_article(1)[2]
+        pick2 = self.api.select_articles_offset_limit_one(1)[2]
         self.assertIsNotNone(pick2[0])
         self.assertEqual(pick2, "url2")
 
-    def test_pick_one_article_url_over_offset(self):
+    def test_select_articles_offset_limit_one_url_over_offset(self):
         create_article(
             title="title1",
             url="url1",
@@ -320,10 +320,10 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick = self.api.pick_one_article(99)
+        pick = self.api.select_articles_offset_limit_one(99)
         self.assertIsNone(pick)
 
-    def test_pick_one_article_url_under_offset(self):
+    def test_select_articles_offset_limit_one_url_under_offset(self):
         create_article(
             title="title1",
             url="url1",
@@ -335,7 +335,7 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        pick = self.api.pick_one_article(-1)
+        pick = self.api.select_articles_offset_limit_one(-1)
         self.assertIsNone(pick)
 
     def test_count_articles_normal(self):
@@ -355,18 +355,18 @@ class TestDBAPI(TestCase):
     def test_count_articles_zero(self):
         self.assertEqual(self.api.count_articles(), 0)
 
-    def test_update_body(self):
+    def test_update_body_from_articles_where_url(self):
         self.api.insert_article(title="title1", url="url1", body="body1")
-        pick = self.api.pick_one_article(0)
+        pick = self.api.select_articles_offset_limit_one(0)
         self.assertIsNotNone(pick)
         self.assertEqual(pick[1], "body1")
 
-        self.api.update_body("url1", "changed")
-        pick = self.api.pick_one_article(0)
+        self.api.update_body_from_articles_where_url("url1", "changed")
+        pick = self.api.select_articles_offset_limit_one(0)
         self.assertIsNotNone(pick)
         self.assertEqual(pick[1], "changed")
 
-    def test_select_top_articles_id_sorted_interest_index_lower_limit(self):
+    def test_select_id_from_articles_sort_limit_top_twenty_lower_limit(self):
         create_article(
             title="title1",
             url="url1",
@@ -378,15 +378,15 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=-1)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=True)
         self.assertEqual(len(ids), 1)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=False)
         self.assertEqual(len(ids), 1)
 
-    def test_select_top_articles_id_sorted_interest_index_positive_max_num(
+    def test_select_id_from_articles_sort_limit_top_twenty_positive_max_num(
             self):
         create_article(
             title="title",
@@ -439,15 +439,15 @@ class TestDBAPI(TestCase):
             body="body",
             interest_index=1)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=True)
         self.assertEqual(len(ids), 2)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=False)
         self.assertEqual(len(ids), 0)
 
-    def test_select_top_articles_id_sorted_interest_index_negative_max_num(
+    def test_select_id_from_articles_sort_limit_top_twenty_negative_max_num(
             self):
         create_article(
             title="title",
@@ -500,15 +500,15 @@ class TestDBAPI(TestCase):
             body="body",
             interest_index=-1)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=True)
         self.assertEqual(len(ids), 0)
 
-        ids = self.api.select_top_articles_id_sorted_interest_index(
+        ids = self.api.select_id_from_articles_sort_limit_top_twenty(
             positive=False)
         self.assertEqual(len(ids), 2)
 
-    def test_select_articles_id_interest_index_zero_normal(self):
+    def test_select_id_from_articles_where_interest_index_zero_normal(self):
         create_article(
             title="title1",
             url="url1",
@@ -520,10 +520,10 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=0)
 
-        ids = self.api.select_articles_id_interest_index_zero()
+        ids = self.api.select_id_from_articles_where_interest_index_zero()
         self.assertEqual(len(ids), 1)
 
-    def test_select_articles_id_interest_index_zero_abnormal(self):
+    def test_select_id_from_articles_where_interest_index_zero_abnormal(self):
         create_article(
             title="title1",
             url="url1",
@@ -535,35 +535,53 @@ class TestDBAPI(TestCase):
             body="body2",
             interest_index=-1)
 
-        ids = self.api.select_articles_id_interest_index_zero()
+        ids = self.api.select_id_from_articles_where_interest_index_zero()
         self.assertEqual(len(ids), 0)
 
-    def test_pick_body_select_id_normal(self):
+    def test_select_body_from_articles_where_id_normal(self):
         article = create_article(
             title="title1",
             url="url1",
             body="body1",
             interest_index=1)
-        body = self.api.pick_body_select_id(article.id)
+        body = self.api.select_body_from_articles_where_id(article.id)
         self.assertEqual(body, "body1")
 
-    def test_pick_body_select_id_over(self):
+    def test_select_body_from_articles_where_id_over(self):
         article = create_article(
             title="title1",
             url="url1",
             body="body1",
             interest_index=1)
-        body = self.api.pick_body_select_id(article.id + 99)
+        body = self.api.select_body_from_articles_where_id(article.id + 99)
         self.assertEqual(body, "")
 
-    def test_pick_body_select_id_under(self):
+    def test_select_body_from_articles_where_id_under(self):
         article = create_article(
             title="title1",
             url="url1",
             body="body1",
             interest_index=1)
-        body = self.api.pick_body_select_id(-1)
+        body = self.api.select_body_from_articles_where_id(-1)
         self.assertEqual(body, "")
+    
+    def test_insert_positive_word(self):
+        self.assertEqual(self.api.insert_positive_word("sample"), 1)
+        self.assertEqual(self.api.insert_positive_word("sample"), 0)
+    
+    def test_insert_negative_word(self):
+        self.assertEqual(self.api.insert_negative_word("sample"), 1)
+        self.assertEqual(self.api.insert_negative_word("sample"), 0)
+    
+    def test_check_already_exists_positive_word(self):
+        self.api.insert_positive_word("sample")
+        self.assertTrue(self.api.check_already_exists_positive_word("sample"))
+        self.assertFalse(self.api.check_already_exists_positive_word("1sample1"))
+
+    def test_check_already_exists_negative_word(self):
+        self.api.insert_negative_word("sample")
+        self.assertTrue(self.api.check_already_exists_negative_word("sample"))
+        self.assertFalse(self.api.check_already_exists_negative_word("1sample1"))
 
 
 class IndexViewTests(TestCase):

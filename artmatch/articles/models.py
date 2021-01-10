@@ -18,14 +18,14 @@ class Interest(models.Model):
         return f"{self.article.title}"
 
 
-class InterestWord(models.Model):
+class PositiveWord(models.Model):
     word = models.TextField(unique=True)
 
     def __str__(self):
         return f"{self.word}"
 
 
-class NotInterestWord(models.Model):
+class NegativeWord(models.Model):
     word = models.TextField(unique=True)
 
     def __str__(self):

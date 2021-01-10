@@ -14,14 +14,14 @@ class IndexView(generic.ListView):
     def get_context_data(self, **kwargs):
         """今のところおススメ記事はinterest_indexで見ている"""
         context = super().get_context_data(**kwargs)
-        recommend_articles_id = self.dbapi.select_top_articles_id_sorted_interest_index()[
+        recommend_articles_id = self.dbapi.select_id_from_articles_sort_limit_top_twenty()[
             :20]
         recommend_articles = Article.objects.in_bulk(recommend_articles_id)
         context['recommend_articles'] = recommend_articles
         return context
 
     def get_queryset(self):
-        no_preference_id = self.dbapi.select_articles_id_interest_index_zero()[
+        no_preference_id = self.dbapi.select_id_from_articles_where_interest_index_zero()[
             :20]
         return Article.objects.in_bulk(no_preference_id)
 
