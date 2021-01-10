@@ -544,7 +544,7 @@ class TestDBAPI(TestCase):
             url="url1",
             body="body1",
             interest_index=1)
-        body  = self.api.pick_body_select_id(article.id)
+        body = self.api.pick_body_select_id(article.id)
         self.assertEqual(body, "body1")
 
     def test_pick_body_select_id_over(self):
@@ -553,7 +553,7 @@ class TestDBAPI(TestCase):
             url="url1",
             body="body1",
             interest_index=1)
-        body  = self.api.pick_body_select_id(article.id+99)
+        body = self.api.pick_body_select_id(article.id + 99)
         self.assertEqual(body, "")
 
     def test_pick_body_select_id_under(self):
@@ -562,8 +562,9 @@ class TestDBAPI(TestCase):
             url="url1",
             body="body1",
             interest_index=1)
-        body  = self.api.pick_body_select_id(-1)
+        body = self.api.pick_body_select_id(-1)
         self.assertEqual(body, "")
+
 
 class IndexViewTests(TestCase):
     def test_no_articles(self):

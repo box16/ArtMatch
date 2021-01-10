@@ -37,8 +37,11 @@ class Crawler:
             return ""
         selected_elems = bs_object.select(css_selector)
 
-        if is_body:
-            return str(selected_elems[0])
+        try:
+            if is_body:
+                return str(selected_elems[0])
+        except IndexError:
+            return "取得エラー！！"
 
         if (selected_elems is not None) and (len(selected_elems) > 0):
             return '\n'.join([elem.get_text() for elem in selected_elems])
@@ -145,7 +148,7 @@ class DBAPI:
             interest.article_id for interest in Interest.objects.all().filter(
                 interest_index=0)]
 
-    def pick_body_select_id(self,id):
+    def pick_body_select_id(self, id):
         try:
             return Article.objects.filter(id=id).get().body
         except Article.DoesNotExist:

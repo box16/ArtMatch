@@ -1,24 +1,25 @@
 import re
 from django.core.management.base import BaseCommand
-from articles.extensions import Crawler,DBAPI
+from articles.extensions import Crawler, DBAPI
 
 web_sites = [
-             {"domain": "https://www.lifehacker.jp/",
-              "body_tag": "[id='realEntryBody']",
-              },
-             {"domain": "https://yuchrszk.blogspot.com/",
-              "body_tag": "[class='post-single-body post-body']",
-              },
-             {"domain": "https://gigazine.net/",
-              "body_tag": "[class='cntimage']",
-              },
-             {"domain": "https://studyhacker.net/",
-              "body_tag": "[class='entry-content']",
-              },
-             ]
+    {"domain": "https://www.lifehacker.jp/",
+     "body_tag": "[id='realEntryBody']",
+     },
+    {"domain": "https://yuchrszk.blogspot.com/",
+     "body_tag": "[class='post-single-body post-body']",
+     },
+    {"domain": "https://gigazine.net/",
+     "body_tag": "[class='cntimage']",
+     },
+    {"domain": "https://studyhacker.net/",
+     "body_tag": "[class='entry-content']",
+     },
+]
+
 
 class Command(BaseCommand):
-    def handle(self,*args,**kwargs):
+    def handle(self, *args, **kwargs):
         crawler = Crawler()
         dbapi = DBAPI()
         total_num = dbapi.count_articles()
@@ -29,10 +30,11 @@ class Command(BaseCommand):
             print(f"{pick_url}")
             for site in web_sites:
                 if site["domain"] in pick_url:
-                    body = crawler.extract_element(bs_object,site["body_tag"],is_body=True)
+                    body = crawler.extract_element(
+                        bs_object, site["body_tag"], is_body=True)
                     break
             if body:
-                dbapi.update_body(pick_url,body)
+                dbapi.update_body(pick_url, body)
                 print(f"update!!")
             else:
                 print(f"can't update..")

@@ -16,3 +16,17 @@ class Interest(models.Model):
 
     def __str__(self):
         return f"{self.article.title}"
+
+
+class InterestWord(models.Model):
+    word = models.TextField(unique=True)
+
+    def __str__(self):
+        return f"{self.word}"
+
+
+class NotInterestWord(models.Model):
+    word = models.TextField(unique=True)
+
+    def __str__(self):
+        return f"{self.word}"

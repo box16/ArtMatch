@@ -1,6 +1,6 @@
 import re
 from django.core.management.base import BaseCommand
-from articles.extensions import Crawler,DBAPI
+from articles.extensions import Crawler, DBAPI
 
 web_sites = [{"name": "LifeHacker",
               "domain": "https://www.lifehacker.jp/",
@@ -32,20 +32,22 @@ web_sites = [{"name": "LifeHacker",
               },
              ]
 
+
 class Command(BaseCommand):
-    def handle(self,*args,**kwargs):
+    def handle(self, *args, **kwargs):
         crawler = Crawler()
         dbapi = DBAPI()
         for site in web_sites:
             urls = crawler.crawl_urls(site["domain"],
                                       site["link_collector"],
                                       times=20)
-            
-            for index,url in enumerate(urls):
+
+            for index, url in enumerate(urls):
                 urls[index] = site["link_creater"](url)
-            
+
             for url in urls:
                 bs_object = crawler.get_bs_object(url)
-                title = crawler.extract_element(bs_object,site["title_tag"])
-                body = crawler.extract_element(bs_object,site["body_tag"],is_body=True)
-                dbapi.insert_article(title=title,url=url,body=body)
+                title = crawler.extract_element(bs_object, site["title_tag"])
+                body = crawler.extract_element(
+                    bs_object, site["body_tag"], is_body=True)
+                dbapi.insert_article(title=title, url=url, body=body)
