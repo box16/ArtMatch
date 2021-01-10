@@ -564,24 +564,26 @@ class TestDBAPI(TestCase):
             interest_index=1)
         body = self.api.select_body_from_articles_where_id(-1)
         self.assertEqual(body, "")
-    
+
     def test_insert_positive_word(self):
         self.assertEqual(self.api.insert_positive_word("sample"), 1)
         self.assertEqual(self.api.insert_positive_word("sample"), 0)
-    
+
     def test_insert_negative_word(self):
         self.assertEqual(self.api.insert_negative_word("sample"), 1)
         self.assertEqual(self.api.insert_negative_word("sample"), 0)
-    
+
     def test_check_already_exists_positive_word(self):
         self.api.insert_positive_word("sample")
         self.assertTrue(self.api.check_already_exists_positive_word("sample"))
-        self.assertFalse(self.api.check_already_exists_positive_word("1sample1"))
+        self.assertFalse(
+            self.api.check_already_exists_positive_word("1sample1"))
 
     def test_check_already_exists_negative_word(self):
         self.api.insert_negative_word("sample")
         self.assertTrue(self.api.check_already_exists_negative_word("sample"))
-        self.assertFalse(self.api.check_already_exists_negative_word("1sample1"))
+        self.assertFalse(
+            self.api.check_already_exists_negative_word("1sample1"))
 
 
 class IndexViewTests(TestCase):

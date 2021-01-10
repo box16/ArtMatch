@@ -16,13 +16,17 @@ class Command(BaseCommand):
         negative_id = dbapi.select_id_from_articles_sort_limit_top_twenty(
             positive=False)
 
-        positive_body = [dbapi.select_body_from_articles_where_id(id) for id in positive_id]
-        negative_body = [dbapi.select_body_from_articles_where_id(id) for id in negative_id]
+        positive_body = [
+            dbapi.select_body_from_articles_where_id(id) for id in positive_id]
+        negative_body = [
+            dbapi.select_body_from_articles_where_id(id) for id in negative_id]
         del(positive_id)
         del(negative_id)
 
-        positive_words = [nlp.extract_legal_nouns_verbs(body) for body in positive_body]
-        negative_words = [nlp.extract_legal_nouns_verbs(body) for body in negative_body]
+        positive_words = [nlp.extract_legal_nouns_verbs(
+            body) for body in positive_body]
+        negative_words = [nlp.extract_legal_nouns_verbs(
+            body) for body in negative_body]
         del(positive_body)
         del(negative_body)
 

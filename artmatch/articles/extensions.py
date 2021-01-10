@@ -156,7 +156,7 @@ class DBAPI:
         except Article.DoesNotExist:
             return ""
 
-    def insert_positive_word(self,word):
+    def insert_positive_word(self, word):
         try:
             positive_word = PositiveWord.objects.create(word=word)
             positive_word.save()
@@ -164,7 +164,7 @@ class DBAPI:
         except IntegrityError:
             return 0
 
-    def insert_negative_word(self,word):
+    def insert_negative_word(self, word):
         try:
             negative_word = NegativeWord.objects.create(word=word)
             negative_word.save()
@@ -172,13 +172,14 @@ class DBAPI:
         except IntegrityError:
             return 0
 
-    def check_already_exists_positive_word(self,word):
+    def check_already_exists_positive_word(self, word):
         result = PositiveWord.objects.filter(word=word)
         return len(result) > 0
 
-    def check_already_exists_negative_word(self,word):
+    def check_already_exists_negative_word(self, word):
         result = NegativeWord.objects.filter(word=word)
         return len(result) > 0
+
 
 class MyCorpus():
     def __init__(self):
