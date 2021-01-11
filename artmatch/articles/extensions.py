@@ -190,6 +190,17 @@ class DBAPI:
             Score.objects.create(article=article, score=given_score)
             return 1
 
+    def select_recommend_articles(self):
+        articles = Article.objects.filter(
+            score__score__gt=50).filter(
+            interest__interest_index__lt=1).filter(
+            interest__interest_index__gt=-
+            1)
+        if len(articles) < 10:
+            return Article.objects.filter(score__score__gt=50)[:20]
+        else:
+            return articles[:20]
+
 
 class MyCorpus():
     def __init__(self):

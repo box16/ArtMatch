@@ -1,21 +1,10 @@
 <h2>おすすめ記事</h2>
 {% if recommend_articles %}
     <ul>
-    {% for id,article in recommend_articles.items %}
-        <li><a href="{% url 'articles:detail' id %}">{{ article.title }}</a></li>
+    {% for article in recommend_articles %}
+        <li><a href="{% url 'articles:detail' article.id %}">{{ article.title }}</a></li>
     {% endfor %}
     </ul>
 {% else %}
     <p>おすすめ記事はありません</p>
-{% endif %}
-
-<h2>好み未登録の記事</h2>
-{% if no_preference_articles %}
-    <ul>
-    {% for id,article in no_preference_articles.items %}
-        <li><a href="{% url 'articles:detail' id %}">{{ article.title }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>好み未登録の記事はありません</p>
 {% endif %}

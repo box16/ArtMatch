@@ -164,13 +164,26 @@ class TestWebcraw(unittest.TestCase):
         self.assertGreater(len(urls), 0)
 
 
-def create_article(title="title", url="url", body="body", interest_index=0):
+def create_article(
+        title="title",
+        url="url",
+        body="body",
+        interest_index=None,
+        given_score=None):
     article = Article.objects.create(title=title, url=url, body=body)
-    interest = Interest.objects.create(
-        article_id=article.id,
-        interest_index=interest_index)
     article.save()
-    interest.save()
+
+    if interest_index is not None:
+        interest = Interest.objects.create(
+            article=article,
+            interest_index=interest_index)
+        interest.save()
+    if given_score is not None:
+        _score = Score.objects.create(
+            article=article,
+            score=given_score)
+        _score.save()
+
     return article
 
 
@@ -639,109 +652,128 @@ class IndexViewTests(TestCase):
         response = self.client.get(reverse('articles:index'))
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, "好み未登録の記事はありません")
         self.assertContains(response, "おすすめ記事はありません")
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(), [])
         self.assertQuerysetEqual(
             response.context['recommend_articles'].values(), [])
 
-    def test_has_articles_interest_zero(self):
-        a = create_article()
+    def test_has_articles_score60_interest0(self):
+        """おすすめが表示される"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=60)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertNotContains(response, "好み未登録の記事はありません")
-        self.assertContains(response, "おすすめ記事はありません")
-        self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title>'])
-        self.assertQuerysetEqual(
-            response.context['recommend_articles'].values(), [])
-
-    def test_has_articles_interest_greater_zero(self):
-        a = create_article(interest_index=1)
-        response = self.client.get(reverse('articles:index'))
-
-        self.assertContains(response, "好み未登録の記事はありません")
         self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(), [])
-        self.assertQuerysetEqual(
-            response.context['recommend_articles'].values(),
+            response.context['recommend_articles'],
             ['<Article: title>'])
 
-    def test_has_articles_interest_greater_zero_zero(self):
-        a0 = create_article(
-            title="title0",
-            url="url0",
-            body="body0",
-            interest_index=0)
-        a1 = create_article(
-            title="title1",
-            url="url1",
-            body="body1",
-            interest_index=1)
+    def test_has_articles_score60_interest1(self):
+        """準おすすめが表示される"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=1,
+            given_score=60)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertNotContains(response, "好み未登録の記事はありません")
         self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title0>'])
-        self.assertQuerysetEqual(
-            response.context['recommend_articles'].values(),
-            ['<Article: title1>'])
+            response.context['recommend_articles'],
+            ['<Article: title>'])
 
-    def test_has_articles_interest_less_zero(self):
-        a = create_article(interest_index=-1)
+    def test_has_articles_score60_interestm1(self):
+        """準おすすめが表示される"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=-1,
+            given_score=60)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertContains(response, "好み未登録の記事はありません")
-        self.assertContains(response, "おすすめ記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(), [])
-        self.assertQuerysetEqual(
-            response.context['recommend_articles'].values(), [])
+            response.context['recommend_articles'],
+            ['<Article: title>'])
 
-    def test_has_articles_interest_less_zero_zero(self):
-        a0 = create_article(
-            title="title0",
-            url="url0",
-            body="body0",
-            interest_index=0)
-        a1 = create_article(
-            title="title1",
-            url="url1",
-            body="body1",
-            interest_index=-1)
+    def test_has_articles_score40_interest0(self):
+        """おすすめが表示されない"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=40)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertNotContains(response, "好み未登録の記事はありません")
         self.assertContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
-            response.context['no_preference_articles'].values(),
-            ['<Article: title0>'])
+            response.context['recommend_articles'],
+            [])
+
+    def test_has_articles_score40_interest1(self):
+        """おすすめが表示されない"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=1,
+            given_score=40)
+        response = self.client.get(reverse('articles:index'))
+
+        self.assertContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
-            response.context['recommend_articles'].values(), [])
+            response.context['recommend_articles'],
+            [])
+
+    def test_has_articles_score40_interestm1(self):
+        """おすすめが表示されない"""
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=-1,
+            given_score=40)
+        response = self.client.get(reverse('articles:index'))
+
+        self.assertContains(response, "おすすめ記事はありません")
+        self.assertQuerysetEqual(
+            response.context['recommend_articles'],
+            [])
 
 
 class DetailViewTests(TestCase):
     def test_normal_access(self):
-        a = create_article()
-        url = reverse('articles:detail', args=(a.id,))
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=50)
+        url = reverse('articles:detail', args=(article.id,))
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, a.title)
-        self.assertContains(response, a.url)
-        self.assertContains(response, a.body)
+        self.assertContains(response, article.title)
+        self.assertContains(response, article.url)
+        self.assertContains(response, article.body)
         self.assertContains(response, "記事一覧に戻る")
         self.assertContains(response, "類似記事")
         self.assertContains(response, "好み登録")
 
     def test_abnormal_access(self):
-        a = create_article()
-        url = reverse('articles:detail', args=(a.id + 999999,))
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=50)
+        url = reverse('articles:detail', args=(article.id + 999999,))
         response = self.client.get(url)
 
         self.assertEqual(response.status_code, 404)
@@ -749,31 +781,48 @@ class DetailViewTests(TestCase):
 
 class VoteViewTests(TestCase):
     def test_no_choice_submit(self):
-        a = create_article()
-        url = reverse('articles:vote', kwargs={"article_id": a.id})
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=50)
+        url = reverse('articles:vote', kwargs={"article_id": article.id})
         response = self.client.post(url)
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, a.title)
-        self.assertContains(response, a.url)
-        self.assertContains(response, a.body)
+        self.assertContains(response, article.title)
+        self.assertContains(response, article.url)
+        self.assertContains(response, article.body)
         self.assertContains(response, "好みが選択されずに登録ボタンが押されました")
 
     def test_no_exists_similar_article(self):
-        a = create_article()
-        url = reverse('articles:vote', kwargs={"article_id": a.id})
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=50)
+        url = reverse('articles:vote', kwargs={"article_id": article.id})
         response = self.client.post(
             url, {"name": "preference", "value": "like"})
 
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, a.title)
-        self.assertContains(response, a.url)
-        self.assertContains(response, a.body)
+        self.assertContains(response, article.title)
+        self.assertContains(response, article.url)
+        self.assertContains(response, article.body)
         self.assertNotContains(response, "好み登録に失敗しました")
 
     def test_no_exists_article(self):
-        a = create_article()
-        url = reverse('articles:vote', kwargs={"article_id": a.id + 99999})
+        article = create_article(
+            title="title",
+            url="url",
+            body="body",
+            interest_index=0,
+            given_score=50)
+        url = reverse(
+            'articles:vote', kwargs={
+                "article_id": article.id + 99999})
         response = self.client.post(
             url, {"name": "preference", "value": "like"})
 

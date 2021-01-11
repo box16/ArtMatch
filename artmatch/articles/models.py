@@ -15,7 +15,7 @@ class Interest(models.Model):
     interest_index = models.FloatField(default=0)
 
     def __str__(self):
-        return f"{self.article.title}"
+        return f"{self.article.title} : {self.interest_index}"
 
 
 class PositiveWord(models.Model):

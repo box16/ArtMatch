@@ -8,22 +8,11 @@ from .extensions import D2V, DBAPI
 
 class IndexView(generic.ListView):
     template_name = "articles/index.html"
-    context_object_name = "no_preference_articles"
+    context_object_name = "recommend_articles"
     dbapi = DBAPI()
 
-    def get_context_data(self, **kwargs):
-        """今のところおススメ記事はinterest_indexで見ている"""
-        context = super().get_context_data(**kwargs)
-        recommend_articles_id = self.dbapi.select_id_from_articles_sort_limit_top_twenty()[
-            :20]
-        recommend_articles = Article.objects.in_bulk(recommend_articles_id)
-        context['recommend_articles'] = recommend_articles
-        return context
-
     def get_queryset(self):
-        no_preference_id = self.dbapi.select_id_from_articles_where_interest_index_zero()[
-            :20]
-        return Article.objects.in_bulk(no_preference_id)
+        return self.dbapi.select_recommend_articles()
 
 
 class DetailView(generic.DetailView):
