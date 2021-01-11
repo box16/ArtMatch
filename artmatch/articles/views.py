@@ -79,8 +79,7 @@ def vote(request, article_id):
 
         return HttpResponseRedirect(
             reverse(
-                'articles:detail', args=(
-                    article_id,)))
+                'articles:index'))
     except Interest.DoesNotExist:
         return render(
             request,
