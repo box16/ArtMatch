@@ -1,10 +1,23 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'articles/index.css' %}">
+
+<header>
+    <h1>ArtMatch</h1>
+</header>
+
+<main>
 <h2>おすすめ記事</h2>
 {% if recommend_articles %}
-    <ul>
+<div class="articles_container">
     {% for article in recommend_articles %}
-        <li><a href="{% url 'articles:detail' article.id %}">{{ article.title }}</a></li>
+        <a  href="{% url 'articles:detail' article.id %}">
+            <div class="articles_item">
+                {{ article.title }}
+            </div>
+        </a>
     {% endfor %}
-    </ul>
+</div>
 {% else %}
     <p>おすすめ記事はありません</p>
 {% endif %}
+</main>

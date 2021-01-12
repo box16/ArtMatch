@@ -191,15 +191,15 @@ class DBAPI:
             return 1
 
     def select_recommend_articles(self):
-        articles = Article.objects.filter(
+        recommend_articles = Article.objects.filter(
             score__score__gt=50).filter(
             interest__interest_index__lt=1).filter(
             interest__interest_index__gt=-
             1)
-        if len(articles) < 10:
-            return Article.objects.filter(score__score__gt=50)[:20]
+        if len(recommend_articles) < 10:
+            return Article.objects.all()[:20]
         else:
-            return articles[:20]
+            return recommend_articles[:20]
 
 
 class MyCorpus():
@@ -220,9 +220,7 @@ class D2V():
         self.path = os.environ.get("CORPUSDIR")
         try:
             self.model = Doc2Vec.load(self.path + "d2v.model")
-        except TypeError:
-            self.model = Doc2Vec.load("d2v.model")
-        except FileNotFoundError:
+        except (FileNotFoundError,TypeError):
             self.model = None
 
     def training(self):

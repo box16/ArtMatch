@@ -672,7 +672,7 @@ class IndexViewTests(TestCase):
             ['<Article: title>'])
 
     def test_has_articles_score60_interest1(self):
-        """準おすすめが表示される"""
+        """とりあえず表示される"""
         article = create_article(
             title="title",
             url="url",
@@ -687,7 +687,7 @@ class IndexViewTests(TestCase):
             ['<Article: title>'])
 
     def test_has_articles_score60_interestm1(self):
-        """準おすすめが表示される"""
+        """とりあえず表示される"""
         article = create_article(
             title="title",
             url="url",
@@ -702,7 +702,7 @@ class IndexViewTests(TestCase):
             ['<Article: title>'])
 
     def test_has_articles_score40_interest0(self):
-        """おすすめが表示されない"""
+        """とりあえず表示される"""
         article = create_article(
             title="title",
             url="url",
@@ -711,13 +711,13 @@ class IndexViewTests(TestCase):
             given_score=40)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertContains(response, "おすすめ記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
             response.context['recommend_articles'],
-            [])
+            ['<Article: title>'])
 
     def test_has_articles_score40_interest1(self):
-        """おすすめが表示されない"""
+        """とりあえず表示される"""
         article = create_article(
             title="title",
             url="url",
@@ -726,13 +726,14 @@ class IndexViewTests(TestCase):
             given_score=40)
         response = self.client.get(reverse('articles:index'))
 
-        self.assertContains(response, "おすすめ記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
             response.context['recommend_articles'],
-            [])
+            ['<Article: title>'])
+
 
     def test_has_articles_score40_interestm1(self):
-        """おすすめが表示されない"""
+        """とりあえず表示される"""
         article = create_article(
             title="title",
             url="url",
@@ -740,11 +741,10 @@ class IndexViewTests(TestCase):
             interest_index=-1,
             given_score=40)
         response = self.client.get(reverse('articles:index'))
-
-        self.assertContains(response, "おすすめ記事はありません")
+        self.assertNotContains(response, "おすすめ記事はありません")
         self.assertQuerysetEqual(
             response.context['recommend_articles'],
-            [])
+            ['<Article: title>'])
 
 
 class DetailViewTests(TestCase):
