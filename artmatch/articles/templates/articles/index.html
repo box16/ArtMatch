@@ -1,21 +1,34 @@
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'articles/index.css' %}">
+
+<main>
+
+<header>
+    <h1>ArtMatch</h1>
+</header>
+
 <h2>おすすめ記事</h2>
 {% if recommend_articles %}
-    <ul>
-    {% for id,article in recommend_articles.items %}
-        <li><a href="{% url 'articles:detail' id %}">{{ article.title }}</a></li>
+<div class="articles_container">
+    {% for article in recommend_articles %}
+            <div class="articles_item">
+                <a  href="{% url 'articles:detail' article.id %}">
+                    <div class="item_container">
+                        <div class="article_image">
+                            Image
+                        </div>
+                        <div class="article_title">
+                            {{ article.title }}
+                        </div>
+                    </div>
+                </a>
+            </div>
+
     {% endfor %}
-    </ul>
+</div>
+
 {% else %}
     <p>おすすめ記事はありません</p>
 {% endif %}
 
-<h2>好み未登録の記事</h2>
-{% if no_preference_articles %}
-    <ul>
-    {% for id,article in no_preference_articles.items %}
-        <li><a href="{% url 'articles:detail' id %}">{{ article.title }}</a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>好み未登録の記事はありません</p>
-{% endif %}
+</main>
