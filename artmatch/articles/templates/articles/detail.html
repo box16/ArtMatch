@@ -42,19 +42,26 @@
             <h3>
                 類似記事
             </h3>
-
-            {% if similar_articles %}
-                <ul>
-                {% for id,title in similar_articles.items %}
-                    <li><a href="{% url 'articles:detail' id %}">{{ title }}</a></li>
-                {% endfor %}
-                </ul>
-            {% else %}
-                <p>
-                    類似記事はありません
-                </p>
-            {% endif %}
-
+            <div class="similar_articles">
+                {% if similar_articles %}
+                    {% for id,title in similar_articles.items %}
+                        <div class="similar_article">
+                            <a href="{% url 'articles:detail' id %}">
+                                <div class="article_image">
+                                    Image
+                                </div>
+                                <div class="article_title">
+                                    {{ title }}
+                                </div>
+                            </a>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <p>
+                        類似記事はありません
+                    </p>
+                {% endif %}
+            </div>
             <p>
                 <a href="{% url 'articles:index' %}">記事一覧に戻る</a>
             </p>
