@@ -33,21 +33,28 @@ class Crawler:
             result_urls.append(link.attrs["href"])
         return list(set(result_urls))
 
-    def extract_element(self, bs_object, css_selector, is_body=False):
+    def extract_element(self, bs_object, title_selector, body_selector):
         if not bs_object:
-            return ""
-        selected_elems = bs_object.select(css_selector)
-
+            return None
+        
         try:
-            if is_body:
-                return str(selected_elems[0])
+            title = bs_object.select(title_selector)[0].get_text()
+            body = bs_object.select(body_selector)[0]
         except IndexError:
-            return "取得エラー！！"
+            return None
+        
+        try:
+            image = bs_object.select(body_selector+ " img")[0].attrs["src"]
+        except IndexError:
+            return {"title":title,
+                "body" :body,
+                "image" :"",
+            }
 
-        if (selected_elems is not None) and (len(selected_elems) > 0):
-            return '\n'.join([elem.get_text() for elem in selected_elems])
-        else:
-            return ""
+        return {"title":title,
+                "body" :body,
+                "image" :image,
+               }
 
     def _format_urls(self, urls):
         for index, url in enumerate(urls):
@@ -100,7 +107,7 @@ class DBAPI:
     def escape_single_quote(self, text):
         return re.sub(r"\'", "\'\'", text)
 
-    def insert_article(self, title="", url="", body=""):
+    def insert_article(self, title="", url="", body="",image=""):
         if not self.due_to_insert_articles(url):
             return 0
         if (not title) or (not url) or (not body):
@@ -109,7 +116,7 @@ class DBAPI:
         title = self.escape_single_quote(title)
         body = self.escape_single_quote(body)
 
-        article = Article.objects.create(title=title, url=url, body=body)
+        article = Article.objects.create(title=title, url=url, body=body,image=image)
         article.save()
 
         interest = Interest.objects.create(article=article)
@@ -136,8 +143,15 @@ class DBAPI:
     def count_articles(self):
         return len(Article.objects.all())
 
-    def update_body_from_articles_where_url(self, url, body):
-        article = Article.objects.filter(url=url).update(body=body)
+    def update_body_from_articles_where_url(self, url, title="",body="",image=""):
+        if (not title) or (not body):
+            return
+        try :
+            article = Article.objects.filter(url=url).update(title=str(title),body=str(body),image=str(image))
+            print("update!")
+        except TypeError:
+            print("update Error!")
+            return
 
     def select_id_from_articles_sort_limit_top_twenty(self, positive=True):
         max_articles_num = math.ceil(self.count_articles() * 0.2)

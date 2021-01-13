@@ -20,8 +20,8 @@ main{
 
 .articles_item{
     background-color: #ffffff;
-    margin: 2vw;
-    padding:2vw;
+    margin: 1vw;
+    padding:1vw;
     width: 60vw;
     height: 10vw;
 }
@@ -37,9 +37,12 @@ main{
 
 .article_image{
     width: 30%;
+    height: 100%;
+    object-fit: cover;
+    margin-right: 5%;
 }
 .article_title{
-    width: 70%;
+    width: 65%;
     font-size: 1.5em;
 }
 

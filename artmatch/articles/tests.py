@@ -93,31 +93,34 @@ class TestWebcraw(unittest.TestCase):
                                           self.website["link_collector"])
         self.assertEqual(len(urls), 0)
 
-    def test_safe_get_normal_url_title(self):
+    def test_extract_element_normal_url(self):
         bs_object = self.crawler.get_bs_object(
             "https://yuchrszk.blogspot.com/2020/12/20208.html")
         element = self.crawler.extract_element(bs_object,
-                                               self.website["title_tag"])
-        self.assertIsNotNone(element)
-
-    def test_safe_get_abnormal_url_title(self):
-        bs_object = self.crawler.get_bs_object("")
-        element = self.crawler.extract_element(bs_object,
-                                               self.website["title_tag"])
-        self.assertEqual(element, "")
-
-    def test_safe_get_normal_url_body(self):
-        bs_object = self.crawler.get_bs_object(
-            "https://yuchrszk.blogspot.com/2020/12/20208.html")
-        element = self.crawler.extract_element(bs_object,
+                                               self.website["title_tag"],
                                                self.website["body_tag"])
         self.assertIsNotNone(element)
 
-    def test_safe_get_abnormal_url_body(self):
+    def test_extract_element_abnormal_url(self):
         bs_object = self.crawler.get_bs_object("")
         element = self.crawler.extract_element(bs_object,
+                                               self.website["title_tag"],
                                                self.website["body_tag"])
-        self.assertEqual(element, "")
+        self.assertIsNone(element)
+    
+    def test_extract_element_abnormal_title_tag(self):
+        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        element = self.crawler.extract_element(bs_object,
+                                               "aaaa",
+                                               self.website["body_tag"])
+        self.assertIsNone(element)
+
+    def test_extract_element_abnormal_body_tag(self):
+        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        element = self.crawler.extract_element(bs_object,
+                                               self.website["title_tag"],
+                                               "aaa")
+        self.assertIsNone(element)
 
     def test_format_urls_slash(self):
         urls = ["https://example/"]
@@ -374,10 +377,11 @@ class TestDBAPI(TestCase):
         self.assertIsNotNone(pick)
         self.assertEqual(pick[1], "body1")
 
-        self.api.update_body_from_articles_where_url("url1", "changed")
+        self.api.update_body_from_articles_where_url("url1", title="changed_title",body="changed_body",image="")
         pick = self.api.select_articles_offset_limit_one(0)
         self.assertIsNotNone(pick)
-        self.assertEqual(pick[1], "changed")
+        self.assertEqual(pick[1], "changed_body")
+        self.assertEqual(pick[3], "changed_title")
 
     def test_select_id_from_articles_sort_limit_top_twenty_lower_limit(self):
         create_article(
