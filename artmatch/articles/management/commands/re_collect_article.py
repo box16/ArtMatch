@@ -37,15 +37,17 @@ class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         crawler = Crawler()
         dbapi = DBAPI()
-        for site in web_sites:
-            urls = crawler.crawl_urls(site["domain"],
-                                      site["link_collector"],
-                                      times=20)
-
-            for index, url in enumerate(urls):
-                urls[index] = site["link_creater"](url)
-
-            for url in urls:
-                bs_object = crawler.get_bs_object(url)
-                elements = crawler.extract_element(bs_object, site["title_tag"],site["body_tag"])
-                dbapi.insert_article(title=elements["title"], url=url, body=elements["body"],image=elements["image"])
+        total_num = dbapi.count_articles()
+        for index in range(total_num):
+            print(f"{index}/{total_num}")
+            pick_url = dbapi.select_articles_offset_limit_one(index)[2]
+            bs_object = crawler.get_bs_object(pick_url)
+            print(f"{pick_url}")
+            for site in web_sites:
+                if site["domain"] in pick_url:
+                    elements = crawler.extract_element(bs_object, site["title_tag"],site["body_tag"])
+                    break
+            if elements:
+                dbapi.update_body_from_articles_where_url(pick_url,title=elements["title"],body=elements["body"],image=elements["image"])
+            else:
+                print("elements None")
