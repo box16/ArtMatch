@@ -14,9 +14,7 @@
             <div class="articles_item">
                 <a  href="{% url 'articles:detail' article.id %}">
                     <div class="item_container">
-                        <div class="article_image">
-                            Image
-                        </div>
+                        <img class="article_image" src={{article.image}} alt={{article.image}}>
                         <div class="article_title">
                             {{ article.title }}
                         </div>
