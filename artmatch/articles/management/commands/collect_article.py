@@ -48,4 +48,5 @@ class Command(BaseCommand):
             for url in urls:
                 bs_object = crawler.get_bs_object(url)
                 elements = crawler.extract_element(bs_object, site["title_tag"],site["body_tag"])
-                dbapi.insert_article(title=elements["title"], url=url, body=elements["body"],image=elements["image"])
+                if elements:
+                    dbapi.insert_article(title=elements["title"], url=url, body=elements["body"],image=elements["image"])
