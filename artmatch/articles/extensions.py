@@ -113,8 +113,9 @@ class DBAPI:
         if (not title) or (not url) or (not body):
             return 0
 
-        title = self.escape_single_quote(title)
-        body = self.escape_single_quote(body)
+        title = self.escape_single_quote(str(title))
+        body = self.escape_single_quote(str(body))
+        image = str(image)
 
         article = Article.objects.create(title=title, url=url, body=body,image=image)
         article.save()
@@ -234,7 +235,7 @@ class D2V():
         self.path = os.environ.get("CORPUSDIR")
         try:
             self.model = Doc2Vec.load(self.path + "d2v.model")
-        except (FileNotFoundError,TypeError):
+        except FileNotFoundError:
             self.model = None
 
     def training(self):
