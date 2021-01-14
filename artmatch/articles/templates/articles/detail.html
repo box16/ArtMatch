@@ -38,20 +38,24 @@
 
                 <input type="submit" value="好み登録">
             </form>
+            
+            <p>
+                <a href="{% url 'articles:index' %}">記事一覧に戻る</a>
+            </p>
 
             <h3>
                 類似記事
             </h3>
-            <div class="similar_articles">
+            <div class="similar_articles_container">
                 {% if similar_articles %}
-                    {% for id,title in similar_articles.items %}
-                        <div class="similar_article">
-                            <a href="{% url 'articles:detail' id %}">
-                                <div class="article_image">
-                                    Image
-                                </div>
-                                <div class="article_title">
-                                    {{ title }}
+                    {% for article in similar_articles %}
+                        <div class="similar_article_item">
+                            <a href="{% url 'articles:detail' article.id %}">
+                                <div class="similar_container">
+                                    <img class="article_image" src={{article.image}} alt={{article.image}}>
+                                    <div class="article_title">
+                                        {{ article.title }}
+                                    </div>
                                 </div>
                             </a>
                         </div>
@@ -62,9 +66,6 @@
                     </p>
                 {% endif %}
             </div>
-            <p>
-                <a href="{% url 'articles:index' %}">記事一覧に戻る</a>
-            </p>
         </aside>
     </div>
 </main>

@@ -22,7 +22,7 @@ class DetailView(generic.DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         similar_articles_id = find_similer_articles(self.kwargs['pk'])
-        similar_articles = Article.objects.in_bulk(similar_articles_id)
+        similar_articles = Article.objects.filter(id__in=similar_articles_id)
         context['similar_articles'] = similar_articles
         return context
 
