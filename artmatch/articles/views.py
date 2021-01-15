@@ -3,7 +3,8 @@ from django.shortcuts import get_object_or_404, render
 from django.views import generic
 from django.urls import reverse
 from .models import Article, Interest
-from .extensions import D2V, DBAPI
+from articles.extensions.d2v import D2V
+from articles.extensions.db_api import DBAPI
 
 
 class IndexView(generic.ListView):

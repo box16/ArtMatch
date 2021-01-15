@@ -1,5 +1,5 @@
 from django.test import TestCase
-from articles.extensions import DBAPI
+from articles.extensions.db_api import DBAPI
 from articles.models import Article, Interest, Score
 
 def create_article(

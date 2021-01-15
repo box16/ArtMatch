@@ -1,6 +1,7 @@
 import re
 from django.core.management.base import BaseCommand
-from articles.extensions import Crawler, DBAPI
+from articles.extensions.webcraw import Crawler
+from articles.extensions.db_api import DBAPI
 
 web_sites = [{"name": "LifeHacker",
               "domain": "https://www.lifehacker.jp/",

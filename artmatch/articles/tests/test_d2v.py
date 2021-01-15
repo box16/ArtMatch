@@ -1,5 +1,5 @@
 import unittest
-from articles.extensions import D2V
+from articles.extensions.d2v import D2V
 
 class TestD2V(unittest.TestCase):
     def setUp(self):

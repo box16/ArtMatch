@@ -1,6 +1,6 @@
 import unittest
 import re
-from articles.extensions import Crawler
+from articles.extensions.webcraw import Crawler
 
 class TestWebcraw(unittest.TestCase):
     def setUp(self):

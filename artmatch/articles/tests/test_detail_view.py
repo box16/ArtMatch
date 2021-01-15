@@ -1,5 +1,5 @@
 from django.test import TestCase
-from articles.extensions import DBAPI
+from articles.extensions.db_api import DBAPI
 from django.urls import reverse
 from articles.models import Article, Interest, Score
 
