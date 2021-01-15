@@ -1,6 +1,6 @@
 import numpy
 from django.core.management.base import BaseCommand
-from articles.extensions import DBAPI
+from articles.extensions.db_api import DBAPI
 
 
 class Command(BaseCommand):

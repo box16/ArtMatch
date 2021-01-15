@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from articles.extensions import D2V
+from articles.extensions.d2v import D2V
 
 
 class Command(BaseCommand):

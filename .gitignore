@@ -11,6 +11,10 @@ artmatch/articles/management/__init__.py
 artmatch/articles/management/__pycache__/
 artmatch/articles/management/commands/__init__.py
 artmatch/articles/management/commands/__pycache__/
+artmatch/articles/tests/__init__.py
+artmatch/articles/tests/__pycache__/
+artmatch/articles/extensions/__init__.py
+artmatch/articles/extensions/__pycache__/
 artmatch/db.sqlite3
 artmatch/manage.py
 ArtMatchDB
