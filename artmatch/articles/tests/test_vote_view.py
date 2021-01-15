@@ -3,6 +3,7 @@ from articles.extensions.db_api import DBAPI
 from django.urls import reverse
 from articles.models import Article, Interest, Score
 
+
 def create_article(
         title="title",
         url="url",
@@ -24,6 +25,7 @@ def create_article(
         _score.save()
 
     return article
+
 
 class VoteViewTests(TestCase):
     def test_no_choice_submit(self):

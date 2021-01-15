@@ -46,9 +46,14 @@ class Command(BaseCommand):
             print(f"{pick_url}")
             for site in web_sites:
                 if site["domain"] in pick_url:
-                    elements = crawler.extract_element(bs_object, site["title_tag"],site["body_tag"])
+                    elements = crawler.extract_element(
+                        bs_object, site["title_tag"], site["body_tag"])
                     break
             if elements:
-                dbapi.update_body_from_articles_where_url(pick_url,title=elements["title"],body=elements["body"],image=elements["image"])
+                dbapi.update_body_from_articles_where_url(
+                    pick_url,
+                    title=elements["title"],
+                    body=elements["body"],
+                    image=elements["image"])
             else:
                 print("elements None")

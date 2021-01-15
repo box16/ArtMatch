@@ -3,6 +3,7 @@ from articles.extensions.db_api import DBAPI
 from django.urls import reverse
 from articles.models import Article, Interest, Score
 
+
 def create_article(
         title="title",
         url="url",
@@ -24,6 +25,7 @@ def create_article(
         _score.save()
 
     return article
+
 
 class IndexViewTests(TestCase):
     def test_no_articles(self):
@@ -108,7 +110,6 @@ class IndexViewTests(TestCase):
         self.assertQuerysetEqual(
             response.context['recommend_articles'],
             ['<Article: title>'])
-
 
     def test_has_articles_score40_interestm1(self):
         """とりあえず表示される"""
