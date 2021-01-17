@@ -3,6 +3,7 @@ import re
 import random
 from bs4 import BeautifulSoup
 
+
 class Crawler:
     def __init__(self):
         pass
@@ -27,25 +28,25 @@ class Crawler:
     def extract_element(self, bs_object, title_selector, body_selector):
         if not bs_object:
             return None
-        
+
         try:
             title = bs_object.select(title_selector)[0].get_text()
             body = bs_object.select(body_selector)[0]
         except IndexError:
             return None
-        
-        try:
-            image = bs_object.select(body_selector+ " img")[0].attrs["src"]
-        except IndexError:
-            return {"title":title,
-                "body" :body,
-                "image" :"",
-            }
 
-        return {"title":title,
-                "body" :body,
-                "image" :image,
-               }
+        try:
+            image = bs_object.select(body_selector + " img")[0].attrs["src"]
+        except IndexError:
+            return {"title": title,
+                    "body": body,
+                    "image": "",
+                    }
+
+        return {"title": title,
+                "body": body,
+                "image": image,
+                }
 
     def _format_urls(self, urls):
         for index, url in enumerate(urls):

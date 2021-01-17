@@ -1,6 +1,7 @@
 import unittest
 from articles.extensions.nlp import NLP
 
+
 class TestNLP(unittest.TestCase):
     def setUp(self):
         self.nlp = NLP()

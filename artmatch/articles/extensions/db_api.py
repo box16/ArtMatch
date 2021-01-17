@@ -13,7 +13,7 @@ class DBAPI:
     def escape_single_quote(self, text):
         return re.sub(r"\'", "\'\'", text)
 
-    def insert_article(self, title="", url="", body="",image=""):
+    def insert_article(self, title="", url="", body="", image=""):
         if not self.due_to_insert_articles(url):
             return 0
         if (not title) or (not url) or (not body):
@@ -23,7 +23,8 @@ class DBAPI:
         body = self.escape_single_quote(str(body))
         image = str(image)
 
-        article = Article.objects.create(title=title, url=url, body=body,image=image)
+        article = Article.objects.create(
+            title=title, url=url, body=body, image=image)
         article.save()
 
         interest = Interest.objects.create(article=article)
@@ -50,11 +51,16 @@ class DBAPI:
     def count_articles(self):
         return len(Article.objects.all())
 
-    def update_body_from_articles_where_url(self, url, title="",body="",image=""):
+    def update_body_from_articles_where_url(
+            self, url, title="", body="", image=""):
         if (not title) or (not body):
             return
-        try :
-            Article.objects.filter(url=url).update(title=str(title),body=str(body),image=str(image))
+        try:
+            Article.objects.filter(
+                url=url).update(
+                title=str(title),
+                body=str(body),
+                image=str(image))
             print("update!")
         except TypeError:
             print("update Error!")
@@ -121,4 +127,3 @@ class DBAPI:
             return Article.objects.all()[:20]
         else:
             return recommend_articles[:20]
-

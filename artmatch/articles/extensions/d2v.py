@@ -4,6 +4,7 @@ from gensim.models.doc2vec import TaggedDocument
 from .nlp import NLP
 from .db_api import DBAPI
 
+
 class MyCorpus():
     def __init__(self):
         self.nlp = NLP()

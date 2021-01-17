@@ -6,6 +6,7 @@ from django.core.management.base import BaseCommand
 from articles.extensions.nlp import NLP
 from articles.extensions.db_api import DBAPI
 
+
 class Command(BaseCommand):
     def handle(self, *args, **kwargs):
         nlp = NLP()

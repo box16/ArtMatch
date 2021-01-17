@@ -2,6 +2,7 @@ from django.test import TestCase
 from articles.extensions.db_api import DBAPI
 from articles.models import Article, Interest, Score
 
+
 def create_article(
         title="title",
         url="url",
@@ -212,7 +213,8 @@ class TestDBAPI(TestCase):
         self.assertIsNotNone(pick)
         self.assertEqual(pick[1], "body1")
 
-        self.api.update_body_from_articles_where_url("url1", title="changed_title",body="changed_body",image="")
+        self.api.update_body_from_articles_where_url(
+            "url1", title="changed_title", body="changed_body", image="")
         pick = self.api.select_articles_offset_limit_one(0)
         self.assertIsNotNone(pick)
         self.assertEqual(pick[1], "changed_body")

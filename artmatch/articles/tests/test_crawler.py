@@ -2,6 +2,7 @@ import unittest
 import re
 from articles.extensions.webcraw import Crawler
 
+
 class TestWebcraw(unittest.TestCase):
     def setUp(self):
         self.crawler = Crawler()
@@ -48,16 +49,18 @@ class TestWebcraw(unittest.TestCase):
                                                self.website["title_tag"],
                                                self.website["body_tag"])
         self.assertIsNone(element)
-    
+
     def test_extract_element_abnormal_title_tag(self):
-        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        bs_object = self.crawler.get_bs_object(
+            "https://yuchrszk.blogspot.com/2020/12/20208.html")
         element = self.crawler.extract_element(bs_object,
                                                "aaaa",
                                                self.website["body_tag"])
         self.assertIsNone(element)
 
     def test_extract_element_abnormal_body_tag(self):
-        bs_object = self.crawler.get_bs_object("https://yuchrszk.blogspot.com/2020/12/20208.html")
+        bs_object = self.crawler.get_bs_object(
+            "https://yuchrszk.blogspot.com/2020/12/20208.html")
         element = self.crawler.extract_element(bs_object,
                                                self.website["title_tag"],
                                                "aaa")

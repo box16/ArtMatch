@@ -5,7 +5,7 @@ class Article(models.Model):
     title = models.TextField()
     url = models.TextField()
     body = models.TextField()
-    image = models.URLField(max_length=250,default="")
+    image = models.URLField(max_length=250, default="")
 
     def __str__(self):
         return f"{self.title}"

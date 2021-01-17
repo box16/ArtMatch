@@ -1,6 +1,7 @@
 import os
 import MeCab
 
+
 class NLP():
     def __init__(self):
         path = os.environ.get("MECABDIC")
