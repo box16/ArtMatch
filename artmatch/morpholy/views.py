@@ -2,6 +2,9 @@ from django.shortcuts import render
 from django.http import HttpResponse
 from django.views.generic.edit import FormView
 from .forms import MorpholyForm
+from .extensions import NLP
+
+nlp = NLP()
 
 posted_data = {"text" : "",
                "select_part" : []}
@@ -17,4 +20,5 @@ class IndexView(FormView):
         return super().form_valid(form)
 
 def result_view(request):
-    return render(request,'morpholy/result.html',posted_data)
+    result_list = nlp.extract_parts(text=posted_data["text"],select_part=posted_data["select_part"])
+    return render(request,'morpholy/result.html',{"part_result" : result_list})

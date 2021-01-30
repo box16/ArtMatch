@@ -8,5 +8,5 @@ class MorpholyForm(forms.Form):
     select_part = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,
         choices=[
-            ("noun", "名詞"), ("verb", "動詞"), ("adjective", "形容詞"), ],
+            ("名詞", "名詞"), ("動詞", "動詞"), ("形容詞", "形容詞"), ],
         label="出力項目")

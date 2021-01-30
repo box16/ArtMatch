@@ -1,15 +1,11 @@
-{% if text %}
-    <p>{{ text }}</p>
+{% if part_result %}
+    <p>
+        {% for part in part_result %}
+            {{part}}<br>
+        {% endfor %}
+    </p>
 {% else %}
-    <p>textがPOSTされていません</p>
-{% endif %}
-
-{% if select_part %}
-    {% for part in select_part %}
-        <p>{{ part }}</p>
-    {% endfor %}
-{% else %}
-    <p>select_partがPOSTされていません</p>
+    <p>解析に失敗しました</p>
 {% endif %}
 
 <p>
