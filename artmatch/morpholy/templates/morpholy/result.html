@@ -1,9 +1,12 @@
 {% if part_result %}
-    <p>
-        {% for part in part_result %}
-            {{part}}<br>
-        {% endfor %}
-    </p>
+    {% for part,result_list in part_result.items %}
+        <h2>{{part}}</h2>
+            <p>
+                {% for result in result_list %}
+                    {{result}} , 
+                {% endfor %}
+            </p>
+    {% endfor %}
 {% else %}
     <p>解析に失敗しました</p>
 {% endif %}

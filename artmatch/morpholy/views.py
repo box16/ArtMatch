@@ -20,5 +20,5 @@ class IndexView(FormView):
         return super().form_valid(form)
 
 def result_view(request):
-    result_list = nlp.extract_parts(text=posted_data["text"],select_part=posted_data["select_part"])
-    return render(request,'morpholy/result.html',{"part_result" : result_list})
+    result = nlp.extract_parts(text=posted_data["text"],select_part=posted_data["select_part"])
+    return render(request,'morpholy/result.html',{"part_result" : result})

@@ -12,7 +12,7 @@ class NLP():
             return text
 
         token = self._mecab_dic.parseToNode(text)
-        result = []
+        result = {part : [] for part in select_part}
         while token:
             if token.feature == "unknown":
                 token = token.next
@@ -24,7 +24,9 @@ class NLP():
                 continue
             
             origin = token.feature.split(",")[6]
-            result.append(origin)
+            result[part].append(origin)
             token = token.next
         
-        return list(set(result))
+        for part in select_part:
+            result[part] = list(set(result[part]))
+        return result
