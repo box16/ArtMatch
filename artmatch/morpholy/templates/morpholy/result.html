@@ -1,0 +1,17 @@
+{% if text %}
+    <p>{{ text }}</p>
+{% else %}
+    <p>textがPOSTされていません</p>
+{% endif %}
+
+{% if select_part %}
+    {% for part in select_part %}
+        <p>{{ part }}</p>
+    {% endfor %}
+{% else %}
+    <p>select_partがPOSTされていません</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'morpholy:index' %}">入力画面に戻る</a>
+</p>
