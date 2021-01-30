@@ -3,7 +3,7 @@ from django import forms
 
 class MorpholyForm(forms.Form):
     text = forms.CharField(widget=forms.Textarea,
-    label="解析対象")
+                           label="解析対象")
 
     select_part = forms.MultipleChoiceField(
         widget=forms.CheckboxSelectMultiple,

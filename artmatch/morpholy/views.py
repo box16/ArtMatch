@@ -6,19 +6,23 @@ from .extensions import NLP
 
 nlp = NLP()
 
-posted_data = {"text" : "",
-               "select_part" : []}
+posted_data = {"text": "",
+               "select_part": []}
+
 
 class IndexView(FormView):
     template_name = 'morpholy/index.html'
     form_class = MorpholyForm
     success_url = 'result'
 
-    def form_valid(self,form):
+    def form_valid(self, form):
         posted_data["text"] = form.data.get("text")
         posted_data["select_part"] = form.data.getlist("select_part")
         return super().form_valid(form)
 
+
 def result_view(request):
-    result = nlp.extract_parts(text=posted_data["text"],select_part=posted_data["select_part"])
-    return render(request,'morpholy/result.html',{"part_result" : result})
+    result = nlp.extract_parts(
+        text=posted_data["text"],
+        select_part=posted_data["select_part"])
+    return render(request, 'morpholy/result.html', {"part_result": result})
