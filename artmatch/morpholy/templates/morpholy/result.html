@@ -1,0 +1,16 @@
+{% if part_result %}
+    {% for part,result_list in part_result.items %}
+        <h2>{{part}}</h2>
+            <p>
+                {% for result in result_list %}
+                    {{result}} , 
+                {% endfor %}
+            </p>
+    {% endfor %}
+{% else %}
+    <p>解析に失敗しました</p>
+{% endif %}
+
+<p>
+    <a href="{% url 'morpholy:index' %}">入力画面に戻る</a>
+</p>
