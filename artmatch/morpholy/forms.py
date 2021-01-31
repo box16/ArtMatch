@@ -9,4 +9,5 @@ class MorpholyForm(forms.Form):
         widget=forms.CheckboxSelectMultiple,
         choices=[
             ("名詞", "名詞"), ("動詞", "動詞"), ("形容詞", "形容詞"), ],
-        label="出力項目")
+        label="出力項目",
+        error_messages={'required': '出力項目を選んでください'})
